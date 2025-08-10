@@ -1,6 +1,6 @@
 # Element Advanced Search
 
-Element Advanced Search 是一个功能强大的 Vue 3 搜索组件，基于 Element Plus 构建，提供了丰富的搜索功能，包括快速搜索、高级筛选、搜索条件缓存、自定义插槽等。本组件及其文档均由通义灵码智能编码助手完成开发与编写，旨在为开发者提供高效、易用的搜索解决方案。
+Element Advanced Search 是一个功能强大的 Vue 3 搜索组件，基于 Element Plus 构建，提供了丰富的搜索功能，包括快速搜索、高级筛选、搜索条件缓存、自定义插槽等。本组件及其文档均由通义灵码智能编码助手完成开发与编写，旨在为开发者提供高效、易用的搜索解决方案。 [查看功能演示](https://wrain.github.io/element-advanced-search/)
 
 ## 组件截图展示
 
@@ -457,7 +457,7 @@ const remoteSearchConfig = {
 
 ## 完整功能演示
 
-查看 [src/components/Demo.vue](./src/components/Demo.vue) 文件了解所有功能的完整使用示例，包括：
+查看 [src/components/Demo.vue](https://wrain.github.io/element-advanced-search/) 文件了解所有功能的完整使用示例，包括：
 - 基础搜索功能
 - 带缓存的搜索功能
 - 自定义插槽使用
