@@ -1,5 +1,15 @@
 # Element Advanced Search
 
+[![npm version](https://img.shields.io/npm/v/element-advanced-search.svg?style=flat-square)](https://www.npmjs.com/package/element-advanced-search)
+[![License](https://img.shields.io/npm/l/element-advanced-search.svg?style=flat-square)](LICENSE)
+[![Vue.js](https://img.shields.io/badge/vue-3.x-brightgreen.svg?style=flat-square)](https://vuejs.org/)
+[![Element Plus](https://img.shields.io/badge/element--plus-2.x-brightgreen.svg?style=flat-square)](https://element-plus.org/)
+[![NPM Downloads](https://img.shields.io/npm/dw/element-advanced-search)
+](https://www.npmjs.com/package/element-advanced-search)
+[![GitHub stars](https://img.shields.io/github/stars/wrain/element-advanced-search.svg?style=flat-square)](https://github.com/wrain/element-advanced-search/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/wrain/element-advanced-search.svg?style=flat-square)](https://github.com/wrain/element-advanced-search/issues)
+
+
 Element Advanced Search 是一个功能强大的 Vue 3 搜索组件，基于 Element Plus 构建，提供了丰富的搜索功能，包括快速搜索、高级筛选、搜索条件缓存、自定义插槽等。本组件及其文档均由通义灵码智能编码助手完成开发与编写，旨在为开发者提供高效、易用的搜索解决方案。   [查看功能演示](https://wrain.github.io/element-advanced-search/)
 
 ## 组件截图展示
