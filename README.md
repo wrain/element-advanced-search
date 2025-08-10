@@ -1,16 +1,15 @@
 # Element Advanced Search
 
 [![npm version](https://img.shields.io/npm/v/element-advanced-search.svg?style=flat-square)](https://www.npmjs.com/package/element-advanced-search)
-[![License](https://img.shields.io/npm/l/element-advanced-search.svg?style=flat-square)](LICENSE)
 [![Vue.js](https://img.shields.io/badge/vue-3.x-brightgreen.svg?style=flat-square)](https://vuejs.org/)
 [![Element Plus](https://img.shields.io/badge/element--plus-2.x-brightgreen.svg?style=flat-square)](https://element-plus.org/)
-[![NPM Downloads](https://img.shields.io/npm/dw/element-advanced-search)
-](https://www.npmjs.com/package/element-advanced-search)
+[![NPM Downloads](https://img.shields.io/npm/dw/element-advanced-search)](https://www.npmjs.com/package/element-advanced-search)
 [![GitHub stars](https://img.shields.io/github/stars/wrain/element-advanced-search.svg?style=flat-square)](https://github.com/wrain/element-advanced-search/stargazers)
 [![GitHub issues](https://img.shields.io/github/issues/wrain/element-advanced-search.svg?style=flat-square)](https://github.com/wrain/element-advanced-search/issues)
 
+[English](README.en.md) | 简体中文
 
-Element Advanced Search 是一个功能强大的 Vue 3 搜索组件，基于 Element Plus 构建，提供了丰富的搜索功能，包括快速搜索、高级筛选、搜索条件缓存、自定义插槽等。本组件及其文档均由通义灵码智能编码助手完成开发与编写，旨在为开发者提供高效、易用的搜索解决方案。   [查看功能演示](https://wrain.github.io/element-advanced-search/)
+Element Advanced Search 是一个功能强大的 Vue 3 搜索组件，基于 Element Plus 构建，提供了丰富的搜索功能，包括快速搜索、高级筛选、搜索条件缓存、自定义插槽等。本组件及其文档均由通义灵码智能编码助手完成开发与编写，旨在为开发者提供高效、易用的搜索解决方案。[查看功能演示](https://wrain.github.io/element-advanced-search/)
 
 ## 组件截图展示
 
@@ -25,6 +24,11 @@ Element Advanced Search 是一个功能强大的 Vue 3 搜索组件，基于 Ele
 - [功能特性](#功能特性)
 - [依赖说明](#依赖说明)
 - [安装与使用](#安装与使用)
+- [类型声明使用说明](#类型声明使用说明)
+  - [1. 导入 SearchConfig 类型](#1-导入-searchconfig-类型)
+  - [2. 主要类型说明](#2-主要类型说明)
+  - [3. 在 Vue 项目中使用类型](#3-在-vue-项目中使用类型)
+  - [4. 自定义类型扩展](#4-自定义类型扩展)
 - [Props](#props)
 - [Events](#events)
 - [SearchConfig 配置项](#searchconfig-配置项)
@@ -87,6 +91,9 @@ npm install -D sass@^1.32.0
 ```bash
 # 安装依赖
 npm install element-plus
+
+# 安装组件
+npm install element-advanced-search
 ```
 
 ```vue
@@ -102,7 +109,8 @@ npm install element-plus
 
 <script setup>
 import { ref } from 'vue'
-import ElementAdvancedSearch from './ElementAdvancedSearch/index.vue'
+import ElementAdvancedSearch from 'element-advanced-search'
+import 'element-advanced-search/dist/style.css'
 
 const searchParams = ref({})
 const searchConfig = {
@@ -121,6 +129,106 @@ const handleSearch = (params) => {
 }
 </script>
 ```
+
+## 类型声明使用说明
+
+本组件提供了完整的 TypeScript 类型支持，您可以通过以下方式使用类型声明：
+
+### 1. 导入 SearchConfig 类型
+
+```typescript
+import type { SearchConfig } from 'element-advanced-search'
+
+// 使用示例
+const searchConfig: SearchConfig = {
+  itemsPerRow: 2,
+  popoverWidth: 800,
+  labelWidth: '100px',
+  inline: true,
+  formItems: [
+    // 表单配置项
+  ]
+}
+```
+
+### 2. 主要类型说明
+
+本组件导出的主要类型包括：
+
+| 类型名称 | 说明 |
+| --- | --- |
+| [SearchConfig](src\components\ElementAdvancedSearch\types.ts#L259-L284) | 搜索配置对象类型，用于定义搜索表单的整体配置 |
+| [FormItem](src\components\ElementAdvancedSearch\types.ts#L246-L257) | 表单项配置类型，定义每个表单项的属性 |
+| [SelectOption](src\components\ElementAdvancedSearch\types.ts#L57-L61) | 选择项配置类型，用于 select、radio 等组件的选项 |
+
+### 3. 在 Vue 项目中使用类型
+
+```vue
+<template>
+  <ElementAdvancedSearch
+    v-model="searchParams"
+    :search-config="searchConfig"
+    @search="handleSearch"
+  />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import ElementAdvancedSearch, { type SearchConfig } from 'element-advanced-search'
+import 'element-advanced-search/dist/style.css'
+
+// 定义搜索参数
+const searchParams = ref<Record<string, any>>({})
+
+// 定义搜索配置并使用类型声明
+const searchConfig: SearchConfig = {
+  itemsPerRow: 2,
+  popoverWidth: 800,
+  labelWidth: '100px',
+  inline: true,
+  formItems: [
+    {
+      field: 'name',
+      label: '姓名',
+      type: 'input',
+      placeholder: '请输入姓名'
+    },
+    {
+      field: 'status',
+      label: '状态',
+      type: 'select',
+      placeholder: '请选择状态',
+      options: [
+        { label: '启用', value: '0' },
+        { label: '禁用', value: '1' }
+      ]
+    }
+  ]
+}
+
+// 搜索事件处理函数
+const handleSearch = (params: Record<string, any>) => {
+  console.log('搜索参数:', params)
+  // 执行搜索逻辑
+}
+</script>
+```
+
+### 4. 自定义类型扩展
+
+如果需要扩展组件提供的类型，可以使用 TypeScript 的类型合并功能：
+
+```typescript
+// 在您的项目中扩展 FormItem 类型
+declare module 'element-advanced-search' {
+  interface FormItem {
+    // 添加自定义属性
+    customProperty?: string
+  }
+}
+```
+
+通过以上方式，您可以在项目中充分利用 TypeScript 的类型检查功能，提高开发效率和代码质量。
 
 ## Props
 
@@ -314,11 +422,11 @@ const handleSearch = (params) => {
 
 插槽作用域参数：
 - `model`: 表单数据对象
-- [field](file://e:\web\element-advanced-search\src\components\ElementAdvancedSearch\types.ts#L11-L11): 当前字段名
+- [field](src\components\ElementAdvancedSearch\types.ts#L11-L11): 当前字段名
 
 ### 自定义标签显示
 
-对于 `type: 'custom'` 的表单项，可以通过 [displayValue](file://e:\web\element-advanced-search\src\components\ElementAdvancedSearch\types.ts#L243-L243) 函数来自定义搜索标签的显示内容：
+对于 `type: 'custom'` 的表单项，可以通过 [displayValue](src\components\ElementAdvancedSearch\types.ts#L243-L243) 函数来自定义搜索标签的显示内容：
 
 ```js
 const searchConfig = {
@@ -352,7 +460,7 @@ const searchConfig = {
 
 <script setup>
 import { ref } from 'vue'
-import ElementAdvancedSearch from './ElementAdvancedSearch/index.vue'
+import ElementAdvancedSearch from 'element-advanced-search'
 
 const searchParams = ref({})
 
@@ -406,7 +514,7 @@ const handleSearch = (params) => {
 
 <script setup>
 import { ref } from 'vue'
-import ElementAdvancedSearch from './ElementAdvancedSearch/index.vue'
+import ElementAdvancedSearch from 'element-advanced-search'
 
 const searchParams = ref({})
 
@@ -467,7 +575,7 @@ const remoteSearchConfig = {
 
 ## 完整功能演示
 
-查看 [src/components/Demo.vue](https://wrain.github.io/element-advanced-search/) 文件了解所有功能的完整使用示例，包括：
+查看 [功能演示](https://wrain.github.io/element-advanced-search/) 文件了解所有功能的完整使用示例，包括：
 - 基础搜索功能
 - 带缓存的搜索功能
 - 自定义插槽使用
@@ -477,11 +585,11 @@ const remoteSearchConfig = {
 
 ## 注意事项
 
-1. 使用缓存功能时，确保为每个页面设置唯一的 [cacheKey](file://e:\web\element-advanced-search\src\components\ElementAdvancedSearch\index.vue#L11-L11)
-2. 对于自定义插槽，需要提供相应的 [slotName](file://e:\web\element-advanced-search\src\components\ElementAdvancedSearch\types.ts#L239-L239) 并在模板中定义对应插槽
-3. 自定义插槽的搜索标签显示可以通过 [displayValue](file://e:\web\element-advanced-search\src\components\ElementAdvancedSearch\types.ts#L243-L243) 函数进行自定义
+1. 使用缓存功能时，确保为每个页面设置唯一的 [cacheKey](src\components\ElementAdvancedSearch\index.vue#L11-L11)
+2. 对于自定义插槽，需要提供相应的 [slotName](src\components\ElementAdvancedSearch\types.ts#L239-L239) 并在模板中定义对应插槽
+3. 自定义插槽的搜索标签显示可以通过 [displayValue](src\components\ElementAdvancedSearch\types.ts#L243-L243) 函数进行自定义
 4. 所有表单项都应设置合适的默认值，以确保表单行为的一致性
-5. 远程搜索功能需要提供 [remoteMethod](file://e:\web\element-advanced-search\src\components\ElementAdvancedSearch\types.ts#L83-L83) 和 [loadOptions](file://e:\web\element-advanced-search\src\components\ElementAdvancedSearch\types.ts#L96-L96) 方法来处理数据加载
+5. 远程搜索功能需要提供 [remoteMethod](src\components\ElementAdvancedSearch\types.ts#L83-L83) 和 [loadOptions](src\components\ElementAdvancedSearch\types.ts#L96-L96) 方法来处理数据加载
 6. 组件会自动处理表单数据的响应式更新和搜索标签的显示
 
 ## 浏览器支持

@@ -1,6 +1,6 @@
 {
   "name": "element-advanced-search",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "功能强大的 Vue 3 搜索组件，基于 Element Plus 构建",
   "main": "dist/element-advanced-search.umd.js",
   "module": "dist/element-advanced-search.es.js",
@@ -31,8 +31,18 @@
     "element-plus",
     "search",
     "advanced-search",
-    "component"
+    "component",
+    "element-plus-component",
+    "vue3-component",
+    "element-plus-advanced-search",
+    "element-plus-search"
   ],
+  "author": "WrainCN <123723620@qq.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wrain/element-advanced-search.git"
+  },
   "peerDependencies": {
     "element-plus": "^2.0.0",
     "vue": "^3.2.0"
