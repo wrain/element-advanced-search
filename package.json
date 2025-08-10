@@ -7,7 +7,7 @@
   "unpkg": "dist/element-advanced-search.min.js",
   "jsdelivr": "dist/element-advanced-search.min.js",
   "types": "types/index.d.ts",
-  "source": "index.js",      
+  "source": "index.js",
   "exports": {
     ".": {
       "import": "./dist/element-advanced-search.es.js",
@@ -32,13 +32,14 @@
     "component"
   ],
   "peerDependencies": {
-    "vue": "^3.2.0",
-    "element-plus": "^2.0.0"
+    "element-plus": "^2.0.0",
+    "vue": "^3.2.0"
   },
   "devDependencies": {
-    "vite": "^4.0.0",
-    "vue": "^3.2.0",
+    "@element-plus/icons-vue": "^2.3.2",
+    "@vitejs/plugin-vue": "^4.0.0",
     "element-plus": "^2.0.0",
-    "@vitejs/plugin-vue": "^4.0.0"
+    "vite": "^4.0.0",
+    "vue": "^3.2.0"
   }
 }
