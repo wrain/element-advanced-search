@@ -1,6 +1,6 @@
 {
   "name": "element-advanced-search",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "功能强大的 Vue 3 搜索组件，基于 Element Plus 构建",
   "main": "dist/element-advanced-search.umd.js",
   "module": "dist/element-advanced-search.es.js",
@@ -11,7 +11,8 @@
   "exports": {
     ".": {
       "import": "./dist/element-advanced-search.es.js",
-      "require": "./dist/element-advanced-search.umd.js"
+      "require": "./dist/element-advanced-search.umd.js",
+      "types": "./src/types/index.d.ts"
     },
     "./dist/style.css": "./dist/style.css"
   },
@@ -19,10 +20,11 @@
     "dist",
     "src"
   ],
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:lib": "vite build --config vite.lib.config.js",
+    "build:lib": "vite build --config vite.lib.config.ts",
     "preview": "vite preview",
     "deploy": "gh-pages -d docs"
   },
@@ -49,12 +51,12 @@
   },
   "devDependencies": {
     "@element-plus/icons-vue": "^2.3.2",
+    "@types/node": "^24.2.1",
     "@vitejs/plugin-vue": "^4.0.0",
+    "@vitejs/plugin-vue-jsx": "^5.0.1",
     "element-plus": "^2.0.0",
+    "sass": "^1.90.0",
     "vite": "^4.0.0",
     "vue": "^3.2.0"
-  },
-  "dependencies": {
-    "element-advanced-search": "^1.0.0"
   }
 }

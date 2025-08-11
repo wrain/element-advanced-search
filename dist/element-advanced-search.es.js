@@ -1,9 +1,9 @@
-import { defineComponent as Ve, ref as A, watch as ee, nextTick as B, computed as O, onMounted as ke, resolveComponent as p, openBlock as c, createElementBlock as _, createElementVNode as q, createVNode as h, withKeys as Ce, withCtx as f, createTextVNode as x, createBlock as v, toDisplayString as F, createCommentVNode as N, unref as Fe, Fragment as I, renderList as w, withDirectives as le, vShow as ae, normalizeStyle as Ie, renderSlot as we } from "vue";
+import { defineComponent as Ve, ref as A, watch as ee, nextTick as B, computed as D, onMounted as ke, resolveComponent as v, openBlock as c, createElementBlock as _, createElementVNode as N, createVNode as h, withKeys as Ce, withCtx as f, createTextVNode as S, createBlock as m, toDisplayString as I, createCommentVNode as O, unref as Fe, Fragment as w, renderList as U, withDirectives as le, vShow as ae, normalizeStyle as Ie, renderSlot as we } from "vue";
 import { ElForm as Ue } from "element-plus";
-const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe = { class: "filter-button-wrapper" }, De = { class: "advanced-search-form-popover" }, Oe = ["data-field"], qe = {
+const Te = { class: "advanced-search" }, Pe = { class: "main-search-bar" }, $e = { class: "filter-button-wrapper" }, qe = { class: "advanced-search-form-popover" }, De = ["data-field"], Ne = {
   key: 9,
   class: "numberrange-container"
-}, Ne = {
+}, Oe = {
   key: 0,
   class: "search-tags"
 }, Re = /* @__PURE__ */ Ve({
@@ -11,21 +11,22 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
   props: {
     searchConfig: {},
     quickSearchField: { default: "keyword" },
+    quickSearchPlaceholder: { default: "请输入搜索关键词" },
     modelValue: { default: () => ({}) },
     cacheKey: { default: "" }
   },
   emits: ["search", "update:modelValue"],
-  setup(U, { emit: R }) {
+  setup(T, { emit: R }) {
     let b = null;
-    const u = U, y = R, oe = A(null), C = A(!1), d = A(""), n = A({}), g = A([]), V = A({}), S = A({}), T = A({}), J = (e, a) => {
+    const u = T, y = R, oe = A(null), C = A(!1), i = A(""), n = A({}), g = A([]), V = A({}), x = A({}), P = A({}), J = (e, a) => {
       const l = n.value[e];
       return Array.isArray(l) && l.length > a ? l[a] : null;
     }, M = (e, a, l) => {
       Array.isArray(n.value[e]) || (n.value[e] = [null, null]), n.value[e][a] = l;
     };
-    ee(() => S.value, () => {
+    ee(() => x.value, () => {
       g.value.length > 0 && g.value.some((a) => {
-        const l = u.searchConfig.formItems.find((r) => r.field === a.key);
+        const l = u.searchConfig.formItems.find((t) => t.field === a.key);
         return l && (l.type === "select" || l.type === "treeselect") && (l.remote || l.loadOptions);
       }) && (b && clearTimeout(b), b = window.setTimeout(() => {
         B(() => {
@@ -33,7 +34,7 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
         });
       }, 100));
     }, { deep: !0 });
-    const W = O(() => u.searchConfig.formItems.length > 1), re = O(() => u.searchConfig.formItems.filter((e) => !e.hidden)), te = O(() => u.searchConfig.popoverWidth || 800), k = O(() => u.cacheKey ? `advancedSearch@${u.cacheKey}` : ""), ne = (e) => {
+    const W = D(() => u.searchConfig.formItems.length > 1), re = D(() => u.searchConfig.formItems.filter((e) => !e.hidden)), te = D(() => u.searchConfig.popoverWidth || 800), k = D(() => u.cacheKey ? `advancedSearch@${u.cacheKey}` : ""), ne = (e) => {
       V.value[e] = !0, B(() => {
         const a = document.querySelector(`[data-field=${e}] .form-item-textarea-overlay textarea`);
         a && a.focus();
@@ -41,7 +42,7 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
     }, L = (e) => {
       if (e.type === "select" || e.type === "treeselect") {
         const a = e;
-        return a.remote && S.value[e.field] ? S.value[e.field] : a.options || [];
+        return a.remote && x.value[e.field] ? x.value[e.field] : a.options || [];
       }
       return [];
     }, se = (e) => L(e), ue = (e) => {
@@ -50,14 +51,14 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
       const a = e;
       return async (l) => {
         if (a.remoteMethod) {
-          T.value[e.field] = !0;
+          P.value[e.field] = !0;
           try {
-            const r = await a.remoteMethod(l);
-            S.value[e.field] = r;
-          } catch (r) {
-            console.error(`Failed to load remote options for ${e.field}:`, r);
+            const t = await a.remoteMethod(l);
+            x.value[e.field] = t;
+          } catch (t) {
+            console.error(`Failed to load remote options for ${e.field}:`, t);
           } finally {
-            T.value[e.field] = !1;
+            P.value[e.field] = !1;
           }
         }
       };
@@ -77,8 +78,8 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
       try {
         const e = localStorage.getItem(k.value);
         if (e) {
-          const a = JSON.parse(e), l = Date.now(), r = 24 * 60 * 60 * 1e3;
-          return l - a.timestamp > r ? (E(), null) : a.searchParams || null;
+          const a = JSON.parse(e), l = Date.now(), t = 24 * 60 * 60 * 1e3;
+          return l - a.timestamp > t ? (E(), null) : a.searchParams || null;
         }
       } catch (e) {
         console.warn("Failed to get search cache:", e), E();
@@ -93,27 +94,27 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
         }
     }, H = () => {
       const e = {};
-      d.value && (e[u.quickSearchField] = d.value), Object.assign(e, n.value);
+      i.value && (e[u.quickSearchField] = i.value), Object.assign(e, n.value);
       const a = g.value, l = [];
-      d.value && l.push({
+      i.value && l.push({
         key: u.quickSearchField,
         label: "关键词",
-        value: d.value
+        value: i.value
       });
-      for (const r of u.searchConfig.formItems) {
-        const t = e[r.field];
-        t != null && t !== "" && !(Array.isArray(t) && t.length === 0) && (r.type === "numberrange" ? Array.isArray(t) && (t[0] !== null || t[1] !== null) && l.push({
-          key: r.field,
-          label: r.label,
-          value: t
-        }) : r.type === "daterange" ? Array.isArray(t) && t.length === 2 && (t[0] !== null || t[1] !== null) && l.push({
-          key: r.field,
-          label: r.label,
-          value: t
-        }) : l.push({
-          key: r.field,
-          label: r.label,
-          value: t
+      for (const t of u.searchConfig.formItems) {
+        const r = e[t.field];
+        r != null && r !== "" && !(Array.isArray(r) && r.length === 0) && (t.type === "numberrange" ? Array.isArray(r) && (r[0] !== null || r[1] !== null) && l.push({
+          key: t.field,
+          label: t.label,
+          value: r
+        }) : t.type === "daterange" ? Array.isArray(r) && r.length === 2 && (r[0] !== null || r[1] !== null) && l.push({
+          key: t.field,
+          label: t.label,
+          value: r
+        }) : t.field !== u.quickSearchField && l.push({
+          key: t.field,
+          label: t.label,
+          value: r
         }));
       }
       de(a, l) || (g.value = l);
@@ -129,10 +130,10 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
       C.value = !1;
     }, Q = () => {
       const e = {};
-      d.value && (e[u.quickSearchField] = d.value), Object.assign(e, n.value), $(e), z(e), y("update:modelValue", e), y("search", e);
+      i.value && (e[u.quickSearchField] = i.value), Object.assign(e, n.value), $(e), z(e), y("update:modelValue", e), y("search", e);
     }, G = () => {
       const e = {};
-      d.value && (e[u.quickSearchField] = d.value), Object.assign(e, n.value), $(e), z(e), fe(), y("update:modelValue", e), y("search", e);
+      i.value && (e[u.quickSearchField] = i.value), Object.assign(e, n.value), $(e), z(e), fe(), y("update:modelValue", e), y("search", e);
     }, X = () => {
       const e = {};
       for (const l of u.searchConfig.formItems)
@@ -143,86 +144,88 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
         else if (l.type === "daterange" || l.type === "numberrange")
           n.value[l.field] = [];
         else if (l.type === "treeselect") {
-          const r = l;
-          n.value[l.field] = r.multiple ? [] : "";
+          const t = l;
+          n.value[l.field] = t.multiple ? [] : "";
         } else if (l.type === "select") {
-          const r = l;
-          n.value[l.field] = r.multiple ? [] : "";
+          const t = l;
+          n.value[l.field] = t.multiple ? [] : "";
         } else
-          l.type === "textarea" ? (n.value[l.field] = l.default ?? "", e[l.field] = !1) : n.value[l.field] = l.default ?? "";
+          l.type === "textarea" ? (n.value[l.field] = l.default ?? "", e[l.field] = !1) : l.type === "number" ? n.value[l.field] = l.default ?? null : n.value[l.field] = l.default ?? "";
       V.value = e, g.value = [], E();
       const a = {};
-      d.value && (a[u.quickSearchField] = d.value), y("update:modelValue", a), y("search", a);
+      i.value && (a[u.quickSearchField] = i.value), y("update:modelValue", a), y("search", a);
     }, $ = (e) => {
       const a = [];
-      d.value && a.push({
+      i.value && a.push({
         key: u.quickSearchField,
         label: "关键词",
-        value: d.value
+        value: i.value
       });
       for (const l of u.searchConfig.formItems) {
-        const r = e[l.field];
-        r != null && r !== "" && !(Array.isArray(r) && r.length === 0) && (l.type === "numberrange" ? Array.isArray(r) && (r[0] !== null || r[1] !== null) && a.push({
+        const t = e[l.field];
+        t != null && t !== "" && !(Array.isArray(t) && t.length === 0) && (l.type === "numberrange" ? Array.isArray(t) && (t[0] !== null || t[1] !== null) && a.push({
           key: l.field,
           label: l.label,
-          value: r
-        }) : l.type === "daterange" ? Array.isArray(r) && r.length === 2 && (r[0] !== null || r[1] !== null) && a.push({
+          value: t
+        }) : l.type === "daterange" ? Array.isArray(t) && t.length === 2 && (t[0] !== null || t[1] !== null) && a.push({
           key: l.field,
           label: l.label,
-          value: r
-        }) : a.push({
+          value: t
+        }) : l.field !== u.quickSearchField && a.push({
           key: l.field,
           label: l.label,
-          value: r
+          value: t
         }));
       }
       g.value = a;
     }, pe = (e) => {
       const a = u.searchConfig.formItems.find((l) => l.field === e.key);
-      if (a && a.type === "custom")
-        return a.displayValue ? a.displayValue(e.value, n.value) : String(e.value);
-      if (a && (a.type === "select" || a.type === "treeselect") && (a.options || S.value[a.field])) {
-        const l = a, r = l.remote ? S.value[a.field] : l.options, t = a.type === "treeselect" && a.nodeKey || "value";
+      if (a && a.displayValue)
+        return a.displayValue(e.value, n.value);
+      if (a && (a.type === "select" || a.type === "treeselect") && (a.options || x.value[a.field])) {
+        const l = a, t = l.remote ? x.value[a.field] : l.options, r = a.type === "treeselect" && a.nodeKey || "value";
         if (Array.isArray(e.value))
-          return e.value.map((i) => {
-            const m = j(r || [], i, t);
-            return m ? m.label : i;
+          return e.value.map((d) => {
+            const p = j(t || [], d, r);
+            return p ? p.label : d;
           }).join(", ");
         {
-          const i = j(r || [], e.value, t);
-          return i ? i.label : e.value;
+          const d = j(t || [], e.value, r);
+          return d ? d.label : e.value;
         }
       }
       if (a && (a.type === "radio" || a.type === "checkbox") && a.options) {
         if (Array.isArray(e.value))
           return e.value.map((l) => {
-            var t;
-            const r = (t = a.options) == null ? void 0 : t.find((i) => i.value === l);
-            return r ? r.label : l;
+            var r;
+            const t = (r = a.options) == null ? void 0 : r.find((d) => d.value === l);
+            return t ? t.label : l;
           }).join(", ");
         {
-          const l = a.options.find((r) => r.value === e.value);
+          const l = a.options.find((t) => t.value === e.value);
           return l ? l.label : e.value;
         }
       }
       if (a && a.type === "daterange" && Array.isArray(e.value)) {
         if (e.value.length === 2) {
-          const [l, r] = e.value;
-          if (l !== null && r !== null)
-            return `${P(l)} ~ ${P(r)}`;
+          const [l, t] = e.value;
+          if (l !== null && t !== null)
+            return `${F(l)} ~ ${F(t)}`;
           if (l !== null)
-            return `≥ ${P(l)}`;
-          if (r !== null)
-            return `≤ ${P(r)}`;
+            return `≥ ${F(l)}`;
+          if (t !== null)
+            return `≤ ${F(t)}`;
         }
         return "";
       }
+      if (a && a.type === "date")
+        return e.value ? F(e.value) : "";
       if (a && a.type === "numberrange" && Array.isArray(e.value)) {
-        const [l, r] = e.value;
-        return l !== null && r !== null ? `${l} - ${r}` : l !== null ? `≥ ${l}` : r !== null ? `≤ ${r}` : "";
+        const [l, t] = e.value;
+        return l !== null && t !== null ? `${l} - ${t}` : l !== null ? `≥ ${l}` : t !== null ? `≤ ${t}` : "";
       }
       return e.value;
-    }, P = (e) => {
+    }, F = (e) => {
       if (e instanceof Date)
         return e.toLocaleDateString();
       if (typeof e == "string" || typeof e == "number") {
@@ -231,19 +234,19 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
       }
       return String(e);
     }, j = (e, a, l) => {
-      for (const r of e) {
-        if (r[l] === a)
-          return r;
-        if (r.children && r.children.length > 0) {
-          const t = j(r.children, a, l);
-          if (t)
-            return t;
+      for (const t of e) {
+        if (t[l] === a)
+          return t;
+        if (t.children && t.children.length > 0) {
+          const r = j(t.children, a, l);
+          if (r)
+            return r;
         }
       }
       return null;
     }, ve = (e) => {
       if (e === u.quickSearchField)
-        d.value = "";
+        i.value = "";
       else {
         const a = u.searchConfig.formItems.find((l) => l.field === e);
         if (a)
@@ -255,20 +258,20 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
             const l = a;
             n.value[e] = l.multiple ? [] : "";
           } else
-            n.value[e] = "";
+            a.type === "number" ? n.value[e] = null : n.value[e] = "";
         else
           n.value[e] = "";
       }
       G();
     }, me = () => {
-      d.value = "", X();
+      i.value = "", X();
     }, he = async () => {
       for (const e of u.searchConfig.formItems)
         if ((e.type === "select" || e.type === "treeselect") && e.loadOptions) {
           const a = e;
           try {
             const l = await a.loadOptions();
-            S.value[e.field] = l, g.value.length > 0 && (b && clearTimeout(b), b = window.setTimeout(() => {
+            x.value[e.field] = l, g.value.length > 0 && (b && clearTimeout(b), b = window.setTimeout(() => {
               B(() => {
                 H();
               });
@@ -279,78 +282,87 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
         }
     };
     return ee(() => u.modelValue, (e) => {
-      e && (d.value = e[u.quickSearchField] || "", Object.keys(e).forEach((a) => {
+      e && (i.value = e[u.quickSearchField] || "", Object.keys(e).forEach((a) => {
         if (a !== u.quickSearchField) {
-          const l = u.searchConfig.formItems.find((r) => r.field === a);
-          l && l.type === "checkbox" && !Array.isArray(e[a]) ? n.value[a] = e[a] ? [e[a]] : [] : l && l.type === "daterange" && e[a] ? Array.isArray(e[a]) ? n.value[a] = e[a].map((r) => {
-            if (r instanceof Date)
-              return r;
-            if (typeof r == "string" || typeof r == "number") {
-              const t = new Date(r);
-              return isNaN(t.getTime()) ? r : t;
+          const l = u.searchConfig.formItems.find((t) => t.field === a);
+          l && l.type === "checkbox" && !Array.isArray(e[a]) ? n.value[a] = e[a] ? [e[a]] : [] : l && l.type === "daterange" && e[a] ? Array.isArray(e[a]) ? n.value[a] = e[a].map((t) => {
+            if (t instanceof Date)
+              return t;
+            if (typeof t == "string" || typeof t == "number") {
+              const r = new Date(t);
+              return isNaN(r.getTime()) ? t : r;
             }
-            return r;
-          }) : n.value[a] = [] : l && l.type === "numberrange" && e[a] ? Array.isArray(e[a]) ? n.value[a] = e[a] : n.value[a] = [null, null] : n.value[a] = e[a];
+            return t;
+          }) : n.value[a] = [] : l && l.type === "numberrange" && e[a] ? Array.isArray(e[a]) ? n.value[a] = e[a] : n.value[a] = [null, null] : l && l.type === "number" && (e[a] === "" || e[a] === void 0) ? n.value[a] = null : n.value[a] = e[a];
         }
       }), $(e));
     }, { immediate: !0 }), ke(() => {
       const e = {}, a = {};
-      for (const t of u.searchConfig.formItems)
-        if (t.type === "custom")
-          e[t.field] = t.default !== void 0 ? t.default : "";
-        else if (t.type === "checkbox")
-          e[t.field] = Array.isArray(t.default) ? t.default : [];
-        else if (t.type === "treeselect") {
-          const i = t;
-          e[t.field] = i.multiple ? Array.isArray(t.default) ? t.default : [] : t.default ?? "";
-        } else if (t.type === "select") {
-          const i = t;
-          e[t.field] = i.multiple ? Array.isArray(t.default) ? t.default : [] : t.default ?? "";
+      for (const r of u.searchConfig.formItems)
+        if (r.type === "custom")
+          e[r.field] = r.default !== void 0 ? r.default : "";
+        else if (r.type === "checkbox")
+          e[r.field] = Array.isArray(r.default) ? r.default : [];
+        else if (r.type === "treeselect") {
+          const d = r;
+          e[r.field] = d.multiple ? Array.isArray(r.default) ? r.default : [] : r.default ?? "";
+        } else if (r.type === "select") {
+          const d = r;
+          e[r.field] = d.multiple ? Array.isArray(r.default) ? r.default : [] : r.default ?? "";
         } else
-          t.type === "daterange" ? e[t.field] = Array.isArray(t.default) ? t.default : [] : t.type === "numberrange" ? e[t.field] = Array.isArray(t.default) ? t.default : [null, null] : t.type === "textarea" ? (e[t.field] = t.default ?? "", a[t.field] = !1) : e[t.field] = t.default ?? "";
+          r.type === "daterange" ? e[r.field] = Array.isArray(r.default) ? r.default : [] : r.type === "numberrange" ? e[r.field] = Array.isArray(r.default) ? r.default : [null, null] : r.type === "textarea" ? (e[r.field] = r.default ?? "", a[r.field] = !1) : r.type === "number" ? e[r.field] = r.default ?? null : e[r.field] = r.default ?? "";
       n.value = e, V.value = a;
       const l = ce();
-      l && (d.value = l[u.quickSearchField] || "", Object.keys(l).forEach((t) => {
-        if (t !== u.quickSearchField) {
-          const i = u.searchConfig.formItems.find((m) => m.field === t);
-          i && i.type === "checkbox" && !Array.isArray(l[t]) ? e[t] = l[t] ? [l[t]] : [] : i && i.type === "daterange" && l[t] ? Array.isArray(l[t]) ? e[t] = l[t].map((m) => {
-            if (m instanceof Date)
-              return m;
-            if (typeof m == "string" || typeof m == "number") {
-              const D = new Date(m);
-              return isNaN(D.getTime()) ? m : D;
-            }
-            return m;
-          }) : e[t] = [] : i && i.type === "numberrange" && l[t] ? Array.isArray(l[t]) ? e[t] = l[t] : e[t] = [null, null] : e[t] = l[t];
+      l && (i.value = l[u.quickSearchField] || "", Object.keys(l).forEach((r) => {
+        if (r !== u.quickSearchField) {
+          const d = u.searchConfig.formItems.find((p) => p.field === r);
+          if (d && d.type === "checkbox" && !Array.isArray(l[r]))
+            e[r] = l[r] ? [l[r]] : [];
+          else if (d && d.type === "date" && l[r])
+            if (typeof l[r] == "string" || typeof l[r] == "number") {
+              const p = new Date(l[r]);
+              e[r] = isNaN(p.getTime()) ? l[r] : p;
+            } else
+              e[r] = l[r];
+          else
+            d && d.type === "daterange" && l[r] ? Array.isArray(l[r]) ? e[r] = l[r].map((p) => {
+              if (p instanceof Date)
+                return p;
+              if (typeof p == "string" || typeof p == "number") {
+                const q = new Date(p);
+                return isNaN(q.getTime()) ? p : q;
+              }
+              return p;
+            }) : e[r] = [] : d && d.type === "numberrange" && l[r] ? Array.isArray(l[r]) ? e[r] = l[r] : e[r] = [null, null] : e[r] = l[r];
         }
       })), n.value = e;
-      const r = {};
-      d.value && (r[u.quickSearchField] = d.value), Object.assign(r, n.value), $(r), l && (y("update:modelValue", r), y("search", r)), he();
+      const t = {};
+      i.value && (t[u.quickSearchField] = i.value), Object.assign(t, n.value), $(t), l && (y("update:modelValue", t), y("search", t)), he();
     }), (e, a) => {
-      const l = p("el-input"), r = p("el-button"), t = p("el-option"), i = p("el-select"), m = p("el-tree-select"), D = p("el-radio"), ye = p("el-radio-group"), be = p("el-checkbox"), ge = p("el-checkbox-group"), Y = p("el-date-picker"), K = p("el-input-number"), Z = p("el-form-item"), _e = p("el-col"), Ae = p("el-row"), xe = p("el-popover"), Se = p("el-tag");
+      const l = v("el-input"), t = v("el-button"), r = v("el-option"), d = v("el-select"), p = v("el-tree-select"), q = v("el-radio"), ye = v("el-radio-group"), be = v("el-checkbox"), ge = v("el-checkbox-group"), Y = v("el-date-picker"), K = v("el-input-number"), Z = v("el-form-item"), _e = v("el-col"), Ae = v("el-row"), Se = v("el-popover"), xe = v("el-tag");
       return c(), _("div", Te, [
-        q("div", $e, [
+        N("div", Pe, [
           h(l, {
-            modelValue: d.value,
-            "onUpdate:modelValue": a[0] || (a[0] = (o) => d.value = o),
-            placeholder: "请输入搜索关键词",
+            modelValue: i.value,
+            "onUpdate:modelValue": a[0] || (a[0] = (o) => i.value = o),
+            placeholder: e.quickSearchPlaceholder,
             class: "quick-search-input",
             onKeyup: Ce(Q, ["enter"])
-          }, null, 8, ["modelValue"]),
-          h(r, {
+          }, null, 8, ["modelValue", "placeholder"]),
+          h(t, {
             type: "primary",
             icon: "Search",
             onClick: Q,
             class: "search-button"
           }, {
             default: f(() => a[2] || (a[2] = [
-              x(" 搜索 ", -1)
+              S(" 搜索 ", -1)
             ])),
             _: 1,
             __: [2]
           }),
-          q("div", Pe, [
-            W.value ? (c(), v(xe, {
+          N("div", $e, [
+            W.value ? (c(), m(Se, {
               key: 0,
               visible: C.value,
               "onUpdate:visible": a[1] || (a[1] = (o) => C.value = o),
@@ -361,7 +373,7 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
               teleported: !0
             }, {
               reference: f(() => [
-                W.value ? (c(), v(r, {
+                W.value ? (c(), m(t, {
                   key: 0,
                   ref: "filterButtonRef",
                   onClick: ie,
@@ -369,13 +381,13 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                   class: "filter-button"
                 }, {
                   default: f(() => [
-                    x(F(C.value ? "收起筛选" : "更多筛选"), 1)
+                    S(I(C.value ? "收起筛选" : "更多筛选"), 1)
                   ]),
                   _: 1
-                }, 8, ["icon"])) : N("", !0)
+                }, 8, ["icon"])) : O("", !0)
               ]),
               default: f(() => [
-                q("div", De, [
+                N("div", qe, [
                   h(Fe(Ue), {
                     ref_key: "advancedFormRef",
                     ref: oe,
@@ -387,7 +399,7 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                     default: f(() => [
                       h(Ae, { gutter: 20 }, {
                         default: f(() => [
-                          (c(!0), _(I, null, w(re.value, (o) => (c(), v(_e, {
+                          (c(!0), _(w, null, U(re.value, (o) => (c(), m(_e, {
                             key: o.field,
                             span: 24 / (e.searchConfig.itemsPerRow || 2),
                             class: "advanced-form-item-col"
@@ -399,7 +411,7 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                                 class: "advanced-form-item"
                               }, {
                                 default: f(() => [
-                                  o.type === "input" || !o.type ? (c(), v(l, {
+                                  o.type === "input" || !o.type ? (c(), m(l, {
                                     key: 0,
                                     modelValue: n.value[o.field],
                                     "onUpdate:modelValue": (s) => n.value[o.field] = s,
@@ -436,7 +448,7 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                                     }, null, 8, ["modelValue", "onUpdate:modelValue", "placeholder", "clearable", "onBlur"]), [
                                       [ae, V.value[o.field]]
                                     ])
-                                  ], 8, Oe)) : o.type === "select" ? (c(), v(i, {
+                                  ], 8, De)) : o.type === "select" ? (c(), m(d, {
                                     key: 2,
                                     modelValue: n.value[o.field],
                                     "onUpdate:modelValue": (s) => n.value[o.field] = s,
@@ -446,20 +458,20 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                                     filterable: o.filterable,
                                     remote: o.remote,
                                     "remote-method": o.remote ? ue(o) : void 0,
-                                    loading: T.value[o.field] || !1,
+                                    loading: P.value[o.field] || !1,
                                     class: "form-item-select",
                                     teleported: !1,
                                     "reserve-keyword": ""
                                   }, {
                                     default: f(() => [
-                                      (c(!0), _(I, null, w(L(o), (s) => (c(), v(t, {
+                                      (c(!0), _(w, null, U(L(o), (s) => (c(), m(r, {
                                         key: s.value,
                                         label: s.label,
                                         value: s.value
                                       }, null, 8, ["label", "value"]))), 128))
                                     ]),
                                     _: 2
-                                  }, 1032, ["modelValue", "onUpdate:modelValue", "placeholder", "clearable", "multiple", "filterable", "remote", "remote-method", "loading"])) : o.type === "treeselect" ? (c(), v(m, {
+                                  }, 1032, ["modelValue", "onUpdate:modelValue", "placeholder", "clearable", "multiple", "filterable", "remote", "remote-method", "loading"])) : o.type === "treeselect" ? (c(), m(p, {
                                     key: 3,
                                     modelValue: n.value[o.field],
                                     "onUpdate:modelValue": (s) => n.value[o.field] = s,
@@ -475,46 +487,46 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                                     "popper-options": { placement: "bottom-start" },
                                     style: Ie({ "--el-tree-select-dropdown-max-height": (o.maxDropdownHeight || 300) + "px" }),
                                     "render-after-expand": !1,
-                                    loading: T.value[o.field] || !1
-                                  }, null, 8, ["modelValue", "onUpdate:modelValue", "placeholder", "clearable", "multiple", "data", "node-key", "props", "show-checkbox", "filterable", "style", "loading"])) : o.type === "radio" ? (c(), v(ye, {
+                                    loading: P.value[o.field] || !1
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue", "placeholder", "clearable", "multiple", "data", "node-key", "props", "show-checkbox", "filterable", "style", "loading"])) : o.type === "radio" ? (c(), m(ye, {
                                     key: 4,
                                     modelValue: n.value[o.field],
                                     "onUpdate:modelValue": (s) => n.value[o.field] = s,
                                     class: "form-item-radio"
                                   }, {
                                     default: f(() => [
-                                      (c(!0), _(I, null, w(o.options, (s) => (c(), v(D, {
+                                      (c(!0), _(w, null, U(o.options, (s) => (c(), m(q, {
                                         key: s.value,
                                         value: s.value,
                                         class: "form-item-radio-option"
                                       }, {
                                         default: f(() => [
-                                          x(F(s.label), 1)
+                                          S(I(s.label), 1)
                                         ]),
                                         _: 2
                                       }, 1032, ["value"]))), 128))
                                     ]),
                                     _: 2
-                                  }, 1032, ["modelValue", "onUpdate:modelValue"])) : o.type === "checkbox" ? (c(), v(ge, {
+                                  }, 1032, ["modelValue", "onUpdate:modelValue"])) : o.type === "checkbox" ? (c(), m(ge, {
                                     key: 5,
                                     modelValue: n.value[o.field],
                                     "onUpdate:modelValue": (s) => n.value[o.field] = s,
                                     class: "form-item-checkbox"
                                   }, {
                                     default: f(() => [
-                                      (c(!0), _(I, null, w(o.options, (s) => (c(), v(be, {
+                                      (c(!0), _(w, null, U(o.options, (s) => (c(), m(be, {
                                         key: s.value,
                                         value: s.value,
                                         class: "form-item-checkbox-option"
                                       }, {
                                         default: f(() => [
-                                          x(F(s.label), 1)
+                                          S(I(s.label), 1)
                                         ]),
                                         _: 2
                                       }, 1032, ["value"]))), 128))
                                     ]),
                                     _: 2
-                                  }, 1032, ["modelValue", "onUpdate:modelValue"])) : o.type === "date" ? (c(), v(Y, {
+                                  }, 1032, ["modelValue", "onUpdate:modelValue"])) : o.type === "date" ? (c(), m(Y, {
                                     key: 6,
                                     modelValue: n.value[o.field],
                                     "onUpdate:modelValue": (s) => n.value[o.field] = s,
@@ -523,7 +535,7 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                                     clearable: o.clearable !== !1,
                                     class: "form-item-date",
                                     teleported: !1
-                                  }, null, 8, ["modelValue", "onUpdate:modelValue", "placeholder", "clearable"])) : o.type === "daterange" ? (c(), v(Y, {
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue", "placeholder", "clearable"])) : o.type === "daterange" ? (c(), m(Y, {
                                     key: 7,
                                     modelValue: n.value[o.field],
                                     "onUpdate:modelValue": (s) => n.value[o.field] = s,
@@ -534,7 +546,7 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                                     class: "form-item-daterange",
                                     teleported: !1,
                                     "range-separator": "至"
-                                  }, null, 8, ["modelValue", "onUpdate:modelValue", "start-placeholder", "end-placeholder", "clearable"])) : o.type === "number" ? (c(), v(K, {
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue", "start-placeholder", "end-placeholder", "clearable"])) : o.type === "number" ? (c(), m(K, {
                                     key: 8,
                                     modelValue: n.value[o.field],
                                     "onUpdate:modelValue": (s) => n.value[o.field] = s,
@@ -543,7 +555,7 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                                     placeholder: o.placeholder || `请输入${o.label}`,
                                     "controls-position": o.controlsPosition || "right",
                                     class: "form-item-number"
-                                  }, null, 8, ["modelValue", "onUpdate:modelValue", "min", "max", "placeholder", "controls-position"])) : o.type === "numberrange" ? (c(), _("div", qe, [
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue", "min", "max", "placeholder", "controls-position"])) : o.type === "numberrange" ? (c(), _("div", Ne, [
                                     h(K, {
                                       "model-value": J(o.field, 0),
                                       min: o.min,
@@ -553,7 +565,7 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                                       class: "form-item-number",
                                       "onUpdate:modelValue": (s) => M(o.field, 0, s ?? null)
                                     }, null, 8, ["model-value", "min", "max", "placeholder", "controls-position", "onUpdate:modelValue"]),
-                                    a[3] || (a[3] = q("span", { class: "range-separator" }, "-", -1)),
+                                    a[3] || (a[3] = N("span", { class: "range-separator" }, "-", -1)),
                                     h(K, {
                                       "model-value": J(o.field, 1),
                                       min: o.min,
@@ -567,7 +579,7 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                                     key: 10,
                                     model: n.value,
                                     field: o.field
-                                  }, void 0, !0) : N("", !0)
+                                  }, void 0, !0) : O("", !0)
                                 ]),
                                 _: 2
                               }, 1032, ["label", "prop"])
@@ -583,23 +595,23 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                         label: " "
                       }, {
                         default: f(() => [
-                          h(r, {
+                          h(t, {
                             type: "primary",
                             icon: "Search",
                             onClick: G
                           }, {
                             default: f(() => a[4] || (a[4] = [
-                              x(" 搜索 ", -1)
+                              S(" 搜索 ", -1)
                             ])),
                             _: 1,
                             __: [4]
                           }),
-                          h(r, {
+                          h(t, {
                             onClick: X,
                             icon: "Refresh"
                           }, {
                             default: f(() => a[5] || (a[5] = [
-                              x(" 重置 ", -1)
+                              S(" 重置 ", -1)
                             ])),
                             _: 1,
                             __: [5]
@@ -613,44 +625,45 @@ const Te = { class: "advanced-search" }, $e = { class: "main-search-bar" }, Pe =
                 ])
               ]),
               _: 3
-            }, 8, ["visible", "width"])) : N("", !0)
+            }, 8, ["visible", "width"])) : O("", !0)
           ])
         ]),
-        g.value.length > 0 ? (c(), _("div", Ne, [
-          (c(!0), _(I, null, w(g.value, (o) => (c(), v(Se, {
+        g.value.length > 0 ? (c(), _("div", Oe, [
+          (c(!0), _(w, null, U(g.value, (o) => (c(), m(xe, {
             key: o.key,
             closable: "",
             onClose: (s) => ve(o.key),
             class: "search-tag"
           }, {
             default: f(() => [
-              x(F(o.label) + ": " + F(pe(o)), 1)
+              S(I(o.label) + ": " + I(pe(o)), 1)
             ]),
             _: 2
           }, 1032, ["onClose"]))), 128)),
-          h(r, {
+          h(t, {
             type: "primary",
             link: "",
             onClick: me,
             class: "clear-all-tags"
           }, {
             default: f(() => a[6] || (a[6] = [
-              x(" 清除所有 ", -1)
+              S(" 清除所有 ", -1)
             ])),
             _: 1,
             __: [6]
           })
-        ])) : N("", !0)
+        ])) : O("", !0)
       ]);
     };
   }
 });
-const Ee = (U, R) => {
-  const b = U.__vccOpts || U;
+const Ee = (T, R) => {
+  const b = T.__vccOpts || T;
   for (const [u, y] of R)
     b[u] = y;
   return b;
-}, Be = /* @__PURE__ */ Ee(Re, [["__scopeId", "data-v-ca879d08"]]);
+}, Be = /* @__PURE__ */ Ee(Re, [["__scopeId", "data-v-31329598"]]);
 export {
+  Be as ElementAdvancedSearch,
   Be as default
 };

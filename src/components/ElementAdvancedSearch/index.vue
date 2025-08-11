@@ -5,7 +5,7 @@
     <div class="main-search-bar">
       <el-input
         v-model="quickSearchValue"
-        placeholder="请输入搜索关键词"
+        :placeholder="quickSearchPlaceholder"
         class="quick-search-input"
         @keyup.enter="handleQuickSearch"
       />
@@ -213,7 +213,7 @@
                         :placeholder="item.minPlaceholder || '最小值'"
                         :controls-position="item.controlsPosition || 'right'"
                         class="form-item-number"
-                        @update:model-value="val => updateNumberRangeValue(item.field, 0, val ?? null)"
+                        @update:model-value="(val: number | null) => updateNumberRangeValue(item.field, 0, val ?? null)"
                       />
                       <span class="range-separator">-</span>
                       <el-input-number
@@ -223,7 +223,7 @@
                         :placeholder="item.maxPlaceholder || '最大值'"
                         :controls-position="item.controlsPosition || 'right'"
                         class="form-item-number"
-                        @update:model-value="val => updateNumberRangeValue(item.field, 1, val ?? null)"
+                        @update:model-value="(val: number | null)  => updateNumberRangeValue(item.field, 1, val ?? null)"
                       />
                     </div>
                     
@@ -287,7 +287,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
-import type { FormItem, SearchConfig, SelectFormItem, SelectOption, TreeselectFormItem } from './types'
+import type { FormItem, SearchConfig, SelectFormItem, SelectOption, TreeselectFormItem } from '../../types'
 import { ElForm } from 'element-plus'
 
 // 添加timer变量用于防抖
@@ -296,12 +296,14 @@ let updateTagsTimer: number | null = null
 interface Props {
   searchConfig: SearchConfig
   quickSearchField?: string // 快速搜索字段名
+  quickSearchPlaceholder?: string // 快速搜索占位符
   modelValue?: Record<string, any> // v-model 绑定值
   cacheKey?: string // 缓存键名，用于区分不同页面的搜索条件
 }
 
 const props = withDefaults(defineProps<Props>(), {
   quickSearchField: 'keyword',
+  quickSearchPlaceholder: '请输入搜索关键词',
   modelValue: () => ({}),
   cacheKey: '' // 默认为空，不启用缓存功能
 })
@@ -436,6 +438,7 @@ const getRemoteMethod = (item: FormItem) => {
 
 // 保存搜索条件到缓存
 const saveSearchCache = (params: Record<string, any>): void => {
+  // 只有在设置了 cacheKey 时才保存缓存
   if (!getCacheKey.value) return
   
   try {
@@ -450,6 +453,7 @@ const saveSearchCache = (params: Record<string, any>): void => {
 
 // 从缓存中获取搜索条件
 const getSearchCache = (): Record<string, any> | null => {
+  // 只有在设置了 cacheKey 时才获取缓存
   if (!getCacheKey.value) return null
   
   try {
@@ -477,6 +481,7 @@ const getSearchCache = (): Record<string, any> | null => {
 
 // 清除缓存
 const clearSearchCache = (): void => {
+  // 只有在设置了 cacheKey 时才清除缓存
   if (!getCacheKey.value) return
   
   try {
@@ -536,7 +541,8 @@ const forceUpdateSearchTags = (): void => {
             value
           })
         }
-      } else {
+      } else if (item.field !== props.quickSearchField) {
+        // 避免重复添加快速搜索字段
         newTags.push({
           key: item.field,
           label: item.label,
@@ -656,6 +662,9 @@ const resetAdvancedForm = (): void => {
       // textarea重置
       advancedFormData.value[item.field] = item.default ?? ''
       resetTextareaFocusStates[item.field] = false
+    } else if (item.type === 'number') {
+      // 数字输入框重置为null而不是空字符串
+      advancedFormData.value[item.field] = item.default ?? null
     } else {
       advancedFormData.value[item.field] = item.default ?? ''
     }
@@ -717,7 +726,8 @@ const updateSearchTags = (searchParams: Record<string, any>): void => {
             value
           })
         }
-      } else {
+      } else if (item.field !== props.quickSearchField) {
+        // 避免重复添加快速搜索字段
         tags.push({
           key: item.field,
           label: item.label,
@@ -734,14 +744,9 @@ const updateSearchTags = (searchParams: Record<string, any>): void => {
 const getDisplayValue = (tag: {key: string, label: string, value: any}): string => {
   const formItem = props.searchConfig.formItems.find(item => item.field === tag.key)
   
-  // 如果是自定义类型字段，优先使用自定义显示插槽
-  if (formItem && formItem.type === 'custom') {
-    // 对于自定义字段，如果有提供显示值则使用，否则使用默认值
-    if (formItem.displayValue) {
-      return formItem.displayValue(tag.value, advancedFormData.value)
-    }
-    // 如果没有提供 displayValue 函数，则返回原始值
-    return String(tag.value)
+  // 如果表单项提供了自定义显示函数，则使用该函数
+  if (formItem && formItem.displayValue) {
+    return formItem.displayValue(tag.value, advancedFormData.value)
   }
   
   // 如果是选择框或树形选择框，查找对应的标签
@@ -787,6 +792,14 @@ const getDisplayValue = (tag: {key: string, label: string, value: any}): string 
       } else if (end !== null) {
         return `≤ ${formatDate(end)}`
       }
+    }
+    return ''
+  }
+  
+  // 如果是日期
+  if (formItem && formItem.type === 'date') {
+    if (tag.value) {
+      return formatDate(tag.value)
     }
     return ''
   }
@@ -854,6 +867,9 @@ const removeSearchTag = (key: string): void => {
       } else if (formItem.type === 'select' || formItem.type === 'treeselect') {
         const selectItem = formItem as (SelectFormItem | TreeselectFormItem)
         advancedFormData.value[key] = selectItem.multiple ? [] : ''
+      } else if (formItem.type === 'number') {
+        // 数字输入框设置为null而不是空字符串
+        advancedFormData.value[key] = null
       } else {
         advancedFormData.value[key] = ''
       }
@@ -937,6 +953,13 @@ watch(() => props.modelValue, (newVal) => {
           } else {
             advancedFormData.value[key] = [null, null]
           }
+        } else if (formItem && formItem.type === 'number') {
+          // 特别处理数字类型数据，确保传递给el-input-number的是Number或null
+          if (newVal[key] === '' || newVal[key] === undefined) {
+            advancedFormData.value[key] = null
+          } else {
+            advancedFormData.value[key] = newVal[key]
+          }
         } else {
           // 对于自定义字段和其他类型直接赋值
           advancedFormData.value[key] = newVal[key]
@@ -982,6 +1005,9 @@ onMounted(() => {
       // textarea初始化
       defaultData[item.field] = item.default ?? ''
       defaultTextareaFocusStates[item.field] = false
+    } else if (item.type === 'number') {
+      // 数字输入框初始化为null而不是空字符串
+      defaultData[item.field] = item.default ?? null
     } else {
       // 其他类型使用默认值或空字符串
       defaultData[item.field] = item.default ?? ''
@@ -992,6 +1018,7 @@ onMounted(() => {
   advancedFormData.value = defaultData
   textareaFocusStates.value = defaultTextareaFocusStates // 设置textarea焦点状态默认值
   
+  // 尝试从缓存中恢复搜索条件
   // 尝试从缓存中恢复搜索条件
   const cachedParams = getSearchCache()
   if (cachedParams) {
@@ -1006,6 +1033,14 @@ onMounted(() => {
         if (formItem && formItem.type === 'checkbox' && !Array.isArray(cachedParams[key])) {
           // 如果缓存中的checkbox数据不是数组格式，转换为数组
           defaultData[key] = cachedParams[key] ? [cachedParams[key]] : []
+        } else if (formItem && formItem.type === 'date' && cachedParams[key]) {
+          // 特别处理日期数据
+          if (typeof cachedParams[key] === 'string' || typeof cachedParams[key] === 'number') {
+            const d = new Date(cachedParams[key])
+            defaultData[key] = isNaN(d.getTime()) ? cachedParams[key] : d
+          } else {
+            defaultData[key] = cachedParams[key]
+          }
         } else if (formItem && formItem.type === 'daterange' && cachedParams[key]) {
           // 特别处理日期范围数据
           if (Array.isArray(cachedParams[key])) {
@@ -1107,11 +1142,7 @@ onMounted(() => {
     }
     
     // 特别处理日期范围选择器的内部组件
-    .form-item-daterange {
-      .el-range-input {
-        width: auto;
-      }
-      
+    .form-item-daterange {      
       .el-date-editor.el-range-editor {
         width: 100%;
       }
@@ -1122,7 +1153,7 @@ onMounted(() => {
       width: 100%;
     }
     
-    .el-date-editor {
+    .el-date-editor.el-range-editor {
       width: calc(100% - 20px);
     }
     
@@ -1244,6 +1275,39 @@ onMounted(() => {
     }
   }
 }
+
+// 暗色主题支持
+html.dark {
+  .advanced-search-popover {
+    background-color: var(--el-bg-color);
+    border-color: var(--el-border-color-light);
+    
+    .advanced-search-form-popover {
+      background-color: var(--el-bg-color);
+    }
+    
+    .el-tree-select__popper {
+      background-color: var(--el-bg-color-overlay);
+      border-color: var(--el-border-color-light);
+      
+      .el-tree {
+        background-color: var(--el-bg-color-overlay);
+        
+        .el-tree-node.is-current > .el-tree-node__content {
+          background-color: var(--el-color-primary-light-9);
+        }
+        
+        .el-tree-node__content:hover {
+          background-color: var(--el-fill-color-light);
+        }
+        
+        .el-tree-node:focus > .el-tree-node__content {
+          background-color: var(--el-color-primary-light-9);
+        }
+      }
+    }
+  }
+}
 </style>
 
 <style scoped lang="scss">
@@ -1311,6 +1375,26 @@ onMounted(() => {
   }
   
   // 移除 scoped 中的 numberrange-container 样式，因为已经移到全局样式中
+}
+
+// 暗色主题支持
+html.dark {
+  .advanced-search {
+    background-color: var(--el-bg-color);
+    border-color: var(--el-border-color-light);
+  }
+  
+  .form-item-textarea-overlay {
+    background-color: var(--el-bg-color);
+  }
+
+  .search-tags {
+    .search-tag {
+      background-color: var(--el-color-primary-light-9);
+      border-color: var(--el-color-primary-light-5);
+      color: var(--el-color-primary);
+    }
+  }
 }
 
 // 响应式设计

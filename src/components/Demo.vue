@@ -13,6 +13,7 @@
         :search-config="fullSearchConfig"
         cache-key="full-demo"
         quick-search-field="keywords"
+        quick-search-placeholder="请输入用户名或邮箱"
         @search="handleFullSearch"
       />
       
@@ -113,29 +114,10 @@ const showSource = (type) => {
   activeSourceTab.value = 'config'
   
   switch(type) {
-    case 'basic':
+        case 'basic':
       sourceDialogTitle.value = '基础用法源码'
       currentSource.value = {
-        config: `const basicSearchConfig = {
-  formItems: [
-    {
-      field: 'name',
-      label: '姓名',
-      type: 'input',
-      placeholder: '请输入姓名'
-    },
-    {
-      field: 'status',
-      label: '状态',
-      type: 'select',
-      placeholder: '请选择状态',
-      options: [
-        { label: '启用', value: '0' },
-        { label: '禁用', value: '1' }
-      ]
-    }
-  ]
-}`,
+        config: `const basicSearchConfig = ${JSON.stringify(Object.assign({}, basicSearchConfig), null, 2)}`,
         template: `<ElementAdvancedSearch
   v-model="basicSearchParams"
   :search-config="basicSearchConfig"
@@ -148,34 +130,10 @@ const handleBasicSearch = (params) => {
       }
       break
       
-    case 'cache':
+        case 'cache':
       sourceDialogTitle.value = '带缓存功能源码'
       currentSource.value = {
-        config: `const cacheSearchConfig = {
-  itemsPerRow: 2,
-  popoverWidth: 800,
-  labelWidth: '100px',
-  inline: true,
-  formItems: [
-    {
-      field: 'userName',
-      label: '用户名称',
-      type: 'input',
-      placeholder: '请输入用户名称'
-    },
-    {
-      field: 'status',
-      label: '状态',
-      type: 'custom',
-      slotName: 'status',
-      default: false,
-      // 添加自定义显示函数
-      displayValue: (value) => {
-        return value ? '启用' : '禁用'
-      }
-    }
-  ]
-}`,
+        config: `const cacheSearchConfig = ${JSON.stringify(Object.assign({}, cacheSearchConfig), null, 2)}`,
         template: `<ElementAdvancedSearch
   v-model="cacheSearchParams"
   :search-config="cacheSearchConfig"
@@ -198,138 +156,10 @@ const handleCacheSearch = (params) => {
       }
       break
       
-    case 'full':
+        case 'full':
       sourceDialogTitle.value = '完整功能演示源码'
       currentSource.value = {
-        config: `const fullSearchConfig = {
-  itemsPerRow: 2,
-  popoverWidth: 800,
-  labelWidth: '80px',
-  inline: true,
-  formItems: [
-    {
-      field: 'userName',
-      label: '用户名称',
-      type: 'input',
-      placeholder: '请输入用户名称'
-    },
-    {
-      field: 'userIds',
-      label: '用户ID',
-      type: 'textarea',
-      shortPlaceholder: '请输入用户ID,回车可换行',
-      longPlaceholder: '请输入用户ID,支持多个值，请回车分隔，可输入多行文本'
-    },
-    {
-      field: 'phone',
-      label: '手机号码',
-      type: 'input',
-      placeholder: '请输入手机号码'
-    },
-    {
-      field: 'status',
-      label: '用户状态',
-      type: 'select',
-      placeholder: '请选择用户状态',
-      options: [
-        { label: '启用', value: '0' },
-        { label: '禁用', value: '1' }
-      ]
-    },
-    {
-      field: 'assignUser',
-      label: '指派用户',
-      type: 'select',
-      placeholder: '请选择指派用户',
-      filterable: true,
-      remote: true,
-      remoteMethod: searchUsers,
-      loadOptions: loadUserOptions
-    },
-    {
-      field: 'gender',
-      label: '性别',
-      type: 'radio',
-      options: [
-        { label: '男', value: 'male' },
-        { label: '女', value: 'female' },
-        { label: '未知', value: 'unknown' }
-      ]
-    },
-    {
-      field: 'hobbies',
-      label: '爱好',
-      type: 'checkbox',
-      default: [],
-      options: [
-        { label: '读书', value: 'reading' },
-        { label: '游泳', value: 'swimming' },
-        { label: '跑步', value: 'running' }
-      ]
-    },
-    {
-      field: 'department',
-      label: '部门',
-      type: 'treeselect',
-      placeholder: '请选择部门',
-      multiple: true,
-      showCheckbox: true,
-      maxDropdownHeight: 400,
-      filterable: true,
-      options: [
-        {
-          value: 'dept_1',
-          label: '技术部',
-          children: [
-            { value: 'dept_1_1', label: '前端组' },
-            { value: 'dept_1_2', label: '后端组' },
-            { value: 'dept_1_3', label: '测试组' }
-          ]
-        },
-        {
-          value: 'dept_2',
-          label: '销售部',
-          children: [
-            { value: 'dept_2_1', label: '国内销售' },
-            { value: 'dept_2_2', label: '国际销售' }
-          ]
-        },
-        {
-          value: 'dept_3',
-          label: '人事部'
-        }
-      ]
-    },
-    {
-      field: 'createTime',
-      label: '创建时间',
-      type: 'daterange',
-      startPlaceholder: '开始日期',
-      endPlaceholder: '结束日期'
-    },
-    {
-      field: 'userType',
-      label: '用户类型',
-      type: 'select',
-      multiple: true,
-      placeholder: '请选择用户类型',
-      options: [
-        { label: '管理员', value: 'admin' },
-        { label: '普通用户', value: 'user' },
-        { label: '访客', value: 'guest' }
-      ]
-    },
-    {
-      field: 'age',
-      label: '年龄范围',
-      type: 'numberrange',
-      min: 0,
-      max: 150,
-      minPlaceholder: '最小年龄',
-      maxPlaceholder: '最大年龄'
-    }
-  ]
-}`,
+        config: `const fullSearchConfig = ${JSON.stringify(Object.assign({}, fullSearchConfig), null, 2)}`,
         template: `<ElementAdvancedSearch
   v-model="fullSearchParams"
   :search-config="fullSearchConfig"
@@ -340,42 +170,144 @@ const handleCacheSearch = (params) => {
         handler: `const fullSearchParams = ref({})
 const handleFullSearch = (params) => {
   console.log('完整搜索:', params)
-}
-
-// 模拟远程数据
-const loadUserOptions = async () => {
-  // 模拟API调用延迟
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  
-  return [
-    { label: '用户A', value: 'user_a' },
-    { label: '用户B', value: 'user_b' },
-    { label: '用户C', value: 'user_c' }
-  ]
-}
-
-const searchUsers = async (query) => {
-  // 模拟API调用延迟
-  await new Promise(resolve => setTimeout(resolve, 500))
-  
-  // 模拟搜索结果
-  const allUsers = [
-    { label: '用户A', value: 'user_a' },
-    { label: '用户B', value: 'user_b' },
-    { label: '用户C', value: 'user_c' },
-    { label: '管理员A', value: 'admin_a' },
-    { label: '管理员B', value: 'admin_b' }
-  ]
-  
-  if (!query) {
-    return allUsers
-  }
-  
-  return allUsers.filter(user => user.label.includes(query))
 }`
       }
       break
   }
+}
+
+// 完整功能演示
+const fullSearchParams = ref({})
+const fullSearchConfig = {
+  itemsPerRow: 2,
+  popoverWidth: 800,
+  labelWidth: '100px',
+  inline: true,
+  formItems: [
+    {
+      field: 'name',
+      label: '姓名',
+      type: 'input',
+      placeholder: '请输入姓名'
+    },
+    {
+      field: 'age',
+      label: '年龄',
+      type: 'numberrange',
+      min: 0,
+      max: 150,
+      minPlaceholder: '最小年龄',
+      maxPlaceholder: '最大年龄'
+    },
+    {
+      field: 'status',
+      label: '状态',
+      type: 'select',
+      placeholder: '请选择状态',
+      multiple: true,
+      options: [
+        { label: '启用', value: '0' },
+        { label: '禁用', value: '1' },
+        { label: '待审核', value: '2' }
+      ]
+    },
+    {
+      field: 'gender',
+      label: '性别',
+      type: 'radio',
+      options: [
+        { label: '男', value: '1' },
+        { label: '女', value: '2' }
+      ]
+    },
+    {
+      field: 'hobby',
+      label: '爱好',
+      type: 'checkbox',
+      options: [
+        { label: '读书', value: '1' },
+        { label: '游泳', value: '2' },
+        { label: '跑步', value: '3' }
+      ]
+    },
+    {
+      field: 'birthday',
+      label: '生日',
+      type: 'date',
+      placeholder: '请选择生日',
+      // 添加自定义显示函数
+      displayValue: (value) => {
+        if (value instanceof Date) {
+          return value.toLocaleDateString('zh-CN')
+        }
+        return value
+      }
+    },
+    {
+      field: 'registerTime',
+      label: '注册时间',
+      type: 'daterange',
+      startPlaceholder: '开始时间',
+      endPlaceholder: '结束时间'
+    },
+    {
+      field: 'department',
+      label: '部门',
+      type: 'treeselect',
+      placeholder: '请选择部门',
+      multiple: true,
+      nodeKey: 'id',
+      props: {
+        value: 'id',
+        label: 'name',
+        children: 'children'
+      },
+      options: [
+        {
+          id: '1',
+          name: '技术部',
+          children: [
+            { id: '1-1', name: '前端组' },
+            { id: '1-2', name: '后端组' },
+            { id: '1-3', name: '测试组' }
+          ]
+        },
+        {
+          id: '2',
+          name: '销售部',
+          children: [
+            { id: '2-1', name: '国内销售' },
+            { id: '2-2', name: '海外销售' }
+          ]
+        },
+        {
+          id: '3',
+          name: '人事部'
+        }
+      ]
+    },
+    {
+      field: 'description',
+      label: '描述',
+      type: 'textarea',
+      placeholder: '请输入描述',
+      shortPlaceholder: '简短描述',
+      longPlaceholder: '详细描述'
+    },
+    {
+      field: 'salary',
+      label: '薪资',
+      type: 'number',
+      min: 0,
+      controlsPosition: 'right',
+      placeholder: '请输入薪资'
+    }
+  ]
+}
+
+const handleFullSearch = (params) => {
+  fullSearchParams.value = params
+  console.log('完整搜索:', params)
 }
 
 // 基础用法
@@ -402,6 +334,7 @@ const basicSearchConfig = {
 }
 
 const handleBasicSearch = (params) => {
+  basicSearchParams.value = params
   console.log('基础搜索:', params)
 }
 
@@ -434,176 +367,8 @@ const cacheSearchConfig = {
 }
 
 const handleCacheSearch = (params) => {
+  cacheSearchParams.value = params
   console.log('缓存搜索:', params)
-}
-
-// 完整功能演示
-const fullSearchParams = ref({})
-
-// 模拟远程数据
-const loadUserOptions = async () => {
-  // 模拟API调用延迟
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  
-  return [
-    { label: '用户A', value: 'user_a' },
-    { label: '用户B', value: 'user_b' },
-    { label: '用户C', value: 'user_c' }
-  ]
-}
-
-const searchUsers = async (query) => {
-  // 模拟API调用延迟
-  await new Promise(resolve => setTimeout(resolve, 500))
-  
-  // 模拟搜索结果
-  const allUsers = [
-    { label: '用户A', value: 'user_a' },
-    { label: '用户B', value: 'user_b' },
-    { label: '用户C', value: 'user_c' },
-    { label: '管理员A', value: 'admin_a' },
-    { label: '管理员B', value: 'admin_b' }
-  ]
-  
-  if (!query) {
-    return allUsers
-  }
-  
-  return allUsers.filter(user => user.label.includes(query))
-}
-
-const fullSearchConfig = {
-  itemsPerRow: 2,
-  popoverWidth: 800,
-  labelWidth: '80px',
-  inline: true,
-  formItems: [
-    {
-      field: 'userName',
-      label: '用户名称',
-      type: 'input',
-      placeholder: '请输入用户名称'
-    },
-    {
-      field: 'userIds',
-      label: '用户ID',
-      type: 'textarea',
-      shortPlaceholder: '请输入用户ID,回车可换行',
-      longPlaceholder: '请输入用户ID,支持多个值，请回车分隔，可输入多行文本'
-    },
-    {
-      field: 'phone',
-      label: '手机号码',
-      type: 'input',
-      placeholder: '请输入手机号码'
-    },
-    {
-      field: 'status',
-      label: '用户状态',
-      type: 'select',
-      placeholder: '请选择用户状态',
-      options: [
-        { label: '启用', value: '0' },
-        { label: '禁用', value: '1' }
-      ]
-    },
-    {
-      field: 'assignUser',
-      label: '指派用户',
-      type: 'select',
-      placeholder: '请选择指派用户',
-      filterable: true,
-      remote: true,
-      remoteMethod: searchUsers,
-      loadOptions: loadUserOptions
-    },
-    {
-      field: 'gender',
-      label: '性别',
-      type: 'radio',
-      options: [
-        { label: '男', value: 'male' },
-        { label: '女', value: 'female' },
-        { label: '未知', value: 'unknown' }
-      ]
-    },
-    {
-      field: 'hobbies',
-      label: '爱好',
-      type: 'checkbox',
-      default: [],
-      options: [
-        { label: '读书', value: 'reading' },
-        { label: '游泳', value: 'swimming' },
-        { label: '跑步', value: 'running' }
-      ]
-    },
-    {
-      field: 'department',
-      label: '部门',
-      type: 'treeselect',
-      placeholder: '请选择部门',
-      multiple: true,
-      showCheckbox: true,
-      maxDropdownHeight: 400,
-      filterable: true,
-      options: [
-        {
-          value: 'dept_1',
-          label: '技术部',
-          children: [
-            { value: 'dept_1_1', label: '前端组' },
-            { value: 'dept_1_2', label: '后端组' },
-            { value: 'dept_1_3', label: '测试组' }
-          ]
-        },
-        {
-          value: 'dept_2',
-          label: '销售部',
-          children: [
-            { value: 'dept_2_1', label: '国内销售' },
-            { value: 'dept_2_2', label: '国际销售' }
-          ]
-        },
-        {
-          value: 'dept_3',
-          label: '人事部'
-        }
-      ]
-    },
-    {
-      field: 'createTime',
-      label: '创建时间',
-      type: 'daterange',
-      startPlaceholder: '开始日期',
-      endPlaceholder: '结束日期'
-    },
-    {
-      field: 'userType',
-      label: '用户类型',
-      type: 'select',
-      multiple: true,
-      placeholder: '请选择用户类型',
-      options: [
-        { label: '管理员', value: 'admin' },
-        { label: '普通用户', value: 'user' },
-        { label: '访客', value: 'guest' }
-      ]
-    },
-    {
-      field: 'age',
-      label: '年龄范围',
-      type: 'numberrange',
-      min: 0,
-      max: 150,
-      minPlaceholder: '最小年龄',
-      maxPlaceholder: '最大年龄'
-    }
-  ]
-}
-
-const handleFullSearch = (params) => {
-  console.log('完整搜索:', params)
 }
 </script>
 
@@ -615,7 +380,8 @@ const handleFullSearch = (params) => {
 }
 
 .demo-card {
-  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
@@ -626,66 +392,91 @@ const handleFullSearch = (params) => {
 
 .result {
   margin-top: 20px;
-  padding: 15px;
+  padding: 16px;
   background-color: #f5f5f5;
   border-radius: 4px;
 }
 
 .result h3 {
   margin-top: 0;
+  color: #333;
 }
 
 .result pre {
   margin: 0;
+  padding: 12px;
+  background-color: #fff;
+  border-radius: 4px;
+  overflow: auto;
+  max-height: 200px;
   white-space: pre-wrap;
-  word-wrap: break-word;
+  color: #333;
+  font-family: 'Courier New', monospace;
 }
 
-/* 源码展示样式 - 暗色调 */
-.source-dialog :deep(.el-dialog__body) {
-  padding: 10px 20px;
+.source-dialog {
+  border-radius: 8px;
 }
 
-.source-tabs :deep(.el-tabs__header) {
-  margin-bottom: 10px;
+.source-tabs {
+  margin-top: 20px;
 }
 
 .source-code {
-  background-color: #2b2b2b;
-  color: #f8f8f2;
-  padding: 15px;
+  padding: 16px;
+  background-color: #f5f5f5;
   border-radius: 4px;
-  max-height: 400px;
-  overflow-y: auto;
+  overflow: auto;
+  max-height: 500px;
   white-space: pre-wrap;
-  word-wrap: break-word;
-  font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 14px;
-  line-height: 1.5;
+  margin: 0;
+  color: #333;
+  font-family: 'Courier New', monospace;
 }
 
-/* 代码语法高亮 */
-.source-code .keyword {
-  color: #f92672;
+/* 暗色主题样式 */
+html.dark .result,
+:deep(.dark) .result {
+  background-color: var(--el-fill-color-light);
+  border: 1px solid var(--el-border-color-light);
 }
 
-.source-code .string {
-  color: #a6e22e;
+html.dark .result h3,
+:deep(.dark) .result h3 {
+  color: var(--el-text-color-primary);
 }
 
-.source-code .comment {
-  color: #75715e;
+html.dark .result pre,
+:deep(.dark) .result pre {
+  background-color: var(--el-bg-color-page);
+  color: var(--el-text-color-primary);
+  border: 1px solid var(--el-border-color-light);
 }
 
-.source-code .literal {
-  color: #ae81ff;
+html.dark .source-code,
+:deep(.dark) .source-code {
+  background-color: var(--el-fill-color-light);
+  color: var(--el-text-color-primary);
+  border: 1px solid var(--el-border-color-light);
 }
 
-.source-code .number {
-  color: #ae81ff;
-}
-
-.source-code .punctuation {
-  color: #f8f8f2;
+/* 特殊优化：为代码区域提供更好的暗色主题体验 */
+html.dark .result pre,
+html.dark .source-code,
+:deep(.dark) .result pre,
+:deep(.dark) .source-code {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--el-border-color-light);
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background-color: var(--el-fill-color-light);
+  }
 }
 </style>
