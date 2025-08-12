@@ -27,6 +27,9 @@
           trigger="click"
           popper-class="advanced-search-popover"
           :teleported="true"
+          :hide-after="0"
+          :persistent="false"
+          :show-arrow="false"
         >
           <template #reference>
             <el-button 
@@ -67,6 +70,7 @@
                       :placeholder="item.placeholder || `请输入${item.label}`"
                       :clearable="item.clearable !== false"
                       class="form-item-input"
+                      v-bind="getElProps(item, 'input')"
                     />
                     
                      <!-- 文本域 -->
@@ -79,6 +83,7 @@
                         :clearable="item.clearable !== false"
                         class="form-item-input"
                         @focus="handleTextareaFocusEvent(item.field)"
+                        v-bind="getElProps(item, 'input')"
                       />
                       
                       <!-- 聚焦时显示的textarea -->
@@ -92,6 +97,7 @@
                         class="form-item-textarea-overlay"
                         :teleported="true"
                         @blur="() => { textareaFocusStates[item.field] = false; }"
+                        v-bind="getElProps(item, 'input')"
                       />
                     </div>
                     
@@ -109,12 +115,14 @@
                       class="form-item-select"
                       :teleported="false"
                       reserve-keyword
+                      v-bind="getElProps(item, 'select')"
                     >
                       <el-option
                         v-for="option in getSelectOptions(item)"
                         :key="option.value"
                         :label="option.label"
                         :value="option.value"
+                        v-bind="getElProps(item, 'option', option)"
                       />
                     </el-select>
                     
@@ -126,8 +134,8 @@
                       :clearable="item.clearable !== false"
                       :multiple="item.multiple"
                       :data="getTreeSelectOptions(item)"
-                      :node-key="item.nodeKey || 'value'"
-                      :props="item.props || { value: 'value', label: 'label', children: 'children' }"
+                      :node-key="item.nodeKey || 'id'"
+                      :props="getTreeSelectProps(item)"
                       :show-checkbox="item.showCheckbox"
                       :filterable="item.filterable"
                       :teleported="false"
@@ -135,6 +143,7 @@
                       :style="{ '--el-tree-select-dropdown-max-height': (item.maxDropdownHeight || 300) + 'px' }"
                       :render-after-expand="false"
                       :loading="loadingStates[item.field] || false"
+                      v-bind="getElProps(item, 'treeSelect')"
                     />
                     
                     <!-- 单选框 -->
@@ -142,12 +151,14 @@
                       v-else-if="item.type === 'radio'"
                       v-model="advancedFormData[item.field]"
                       class="form-item-radio"
+                      v-bind="getElProps(item, 'radioGroup')"
                     >
                       <el-radio
                         v-for="option in item.options"
                         :key="option.value"
                         :value="option.value"
                         class="form-item-radio-option"
+                        v-bind="getElProps(item, 'radio', option)"
                       >
                         {{ option.label }}
                       </el-radio>
@@ -158,12 +169,14 @@
                       v-else-if="item.type === 'checkbox'"
                       v-model="advancedFormData[item.field]"
                       class="form-item-checkbox"
+                      v-bind="getElProps(item, 'checkboxGroup')"
                     >
                       <el-checkbox
                         v-for="option in item.options"
                         :key="option.value"
                         :value="option.value"
                         class="form-item-checkbox-option"
+                        v-bind="getElProps(item, 'checkbox', option)"
                       >
                         {{ option.label }}
                       </el-checkbox>
@@ -178,6 +191,7 @@
                       :clearable="item.clearable !== false"
                       class="form-item-date"
                       :teleported="false"
+                      v-bind="getElProps(item, 'datePicker')"
                     />
                     
                     <!-- 日期范围选择器 -->
@@ -191,6 +205,7 @@
                       class="form-item-daterange"
                       :teleported="false"
                       range-separator="至"
+                      v-bind="getElProps(item, 'datePicker')"
                     />
                     
                     <!-- 数字输入框 -->
@@ -202,6 +217,7 @@
                       :placeholder="item.placeholder || `请输入${item.label}`"
                       :controls-position="item.controlsPosition || 'right'"
                       class="form-item-number"
+                      v-bind="getElProps(item, 'inputNumber')"
                     />
                     
                     <!-- 数字范围输入框 -->
@@ -214,6 +230,7 @@
                         :controls-position="item.controlsPosition || 'right'"
                         class="form-item-number"
                         @update:model-value="(val: number | null) => updateNumberRangeValue(item.field, 0, val ?? null)"
+                        v-bind="getElProps(item, 'inputNumber')"
                       />
                       <span class="range-separator">-</span>
                       <el-input-number
@@ -224,9 +241,37 @@
                         :controls-position="item.controlsPosition || 'right'"
                         class="form-item-number"
                         @update:model-value="(val: number | null)  => updateNumberRangeValue(item.field, 1, val ?? null)"
+                        v-bind="getElProps(item, 'inputNumber')"
                       />
                     </div>
                     
+                    <!-- 时间选择器 -->
+                    <el-time-picker
+                      v-else-if="item.type === 'time'"
+                      v-model="advancedFormData[item.field]"
+                      :placeholder="item.placeholder || `请选择${item.label}`"
+                      :clearable="item.clearable !== false"
+                      :format="item.format"
+                      class="form-item-time"
+                      :teleported="false"
+                      v-bind="getElProps(item, 'timePicker')"
+                    />
+                    
+                    <!-- 时间范围选择器 -->
+                    <el-time-picker
+                      v-else-if="item.type === 'timerange'"
+                      v-model="advancedFormData[item.field]"
+                      is-range
+                      :start-placeholder="item.startPlaceholder || '开始时间'"
+                      :end-placeholder="item.endPlaceholder || '结束时间'"
+                      :clearable="item.clearable !== false"
+                      :format="item.format"
+                      class="form-item-timerange"
+                      :teleported="false"
+                      range-separator="至"
+                      v-bind="getElProps(item, 'timePicker')"
+                    />
+
                     <!-- 自定义插槽 -->
                     <slot 
                       v-else-if="item.type === 'custom'" 
@@ -345,6 +390,9 @@ const updateNumberRangeValue = (field: string, index: number, val: number | null
   
   // 更新对应索引的值
   advancedFormData.value[field][index] = val
+  
+  // 触发响应式更新
+  advancedFormData.value = { ...advancedFormData.value }
 }
 
 watch(() => remoteSelectOptions.value, () => {
@@ -401,19 +449,42 @@ const handleTextareaFocusEvent = (field: string): void => {
 
 // 获取select选项
 const getSelectOptions = (item: FormItem): SelectOption[] => {
-  if (item.type === 'select' || item.type === 'treeselect') {
-    const selectItem = item as (SelectFormItem | TreeselectFormItem)
-    if (selectItem.remote && remoteSelectOptions.value[item.field]) {
-      return remoteSelectOptions.value[item.field]
+  try {
+    if (item.type === 'select' || item.type === 'treeselect') {
+      const selectItem = item as (SelectFormItem | TreeselectFormItem)
+      if (selectItem.remote && remoteSelectOptions.value[item.field]) {
+        return remoteSelectOptions.value[item.field]
+      }
+      return selectItem.options || []
     }
-    return selectItem.options || []
+    return []
+  } catch (e) {
+    console.error('Error getting select options:', e)
+    return []
   }
-  return []
 }
 
 // 获取TreeSelect选项
 const getTreeSelectOptions = (item: FormItem): SelectOption[] => {
   return getSelectOptions(item)
+}
+
+// 获取TreeSelect的props配置
+const getTreeSelectProps = (item: FormItem): any => {
+  if (item.type === 'treeselect') {
+    const treeItem = item as TreeselectFormItem
+    // 如果有自定义props配置，直接使用
+    if (treeItem.props && typeof treeItem.props === 'object') {
+      return treeItem.props
+    }
+    // 否则使用默认配置
+    return {
+      value: treeItem.nodeKey || 'id',
+      label: 'label',
+      children: 'children'
+    }
+  }
+  return {}
 }
 
 // 获取远程方法
@@ -567,15 +638,13 @@ const isTagsEqual = (
     return false
   }
   
-  for (let i = 0; i < tags1.length; i++) {
-    if (tags1[i].key !== tags2[i].key || 
-        tags1[i].label !== tags2[i].label || 
-        JSON.stringify(tags1[i].value) !== JSON.stringify(tags2[i].value)) {
-      return false
-    }
-  }
-  
-  return true
+  // 使用更高效的比较方式
+  return tags1.every((tag1, index) => {
+    const tag2 = tags2[index]
+    return tag1.key === tag2.key && 
+           tag1.label === tag2.label && 
+           JSON.stringify(tag1.value) === JSON.stringify(tag2.value)
+  })
 }
 
 // 方法
@@ -642,33 +711,38 @@ const handleAdvancedSearch = (): void => {
 const resetAdvancedForm = (): void => {
   // 重置表单数据
   const resetTextareaFocusStates: Record<string, boolean> = {}
+  const newData: Record<string, any> = {}
+  
   for (const item of props.searchConfig.formItems) {
     if (item.type === 'custom') {
       // 自定义字段重置为默认值或空值
-      advancedFormData.value[item.field] = item.default !== undefined ? item.default : ''
+      newData[item.field] = item.default !== undefined ? item.default : ''
     } else if (item.type === 'checkbox') {
       // checkbox必须重置为数组
-      advancedFormData.value[item.field] = []
+      newData[item.field] = []
     } else if (item.type === 'daterange' || item.type === 'numberrange') {
       // 日期范围和数字范围重置为空数组
-      advancedFormData.value[item.field] = []
+      newData[item.field] = []
     } else if (item.type === 'treeselect') {
       const treeItem = item as TreeselectFormItem
-      advancedFormData.value[item.field] = treeItem.multiple ? [] : ''
+      newData[item.field] = treeItem.multiple ? [] : ''
     } else if (item.type === 'select') {
       const selectItem = item as SelectFormItem
-      advancedFormData.value[item.field] = selectItem.multiple ? [] : ''
+      newData[item.field] = selectItem.multiple ? [] : ''
     } else if (item.type === 'textarea') {
       // textarea重置
-      advancedFormData.value[item.field] = item.default ?? ''
+      newData[item.field] = item.default ?? ''
       resetTextareaFocusStates[item.field] = false
     } else if (item.type === 'number') {
       // 数字输入框重置为null而不是空字符串
-      advancedFormData.value[item.field] = item.default ?? null
+      newData[item.field] = item.default ?? null
     } else {
-      advancedFormData.value[item.field] = item.default ?? ''
+      newData[item.field] = item.default ?? ''
     }
   }
+  
+  // 一次性更新表单数据
+  advancedFormData.value = newData
   
   // 重置textarea焦点状态
   textareaFocusStates.value = resetTextareaFocusStates
@@ -691,53 +765,108 @@ const resetAdvancedForm = (): void => {
 
 // 更新搜索标签
 const updateSearchTags = (searchParams: Record<string, any>): void => {
-  const tags: Array<{key: string, label: string, value: any}> = []
-  
-  // 处理快速搜索标签
-  if (quickSearchValue.value) {
-    tags.push({
-      key: props.quickSearchField,
-      label: '关键词',
-      value: quickSearchValue.value
-    })
-  }
-  
-  // 处理高级搜索标签
-  for (const item of props.searchConfig.formItems) {
-    const value = searchParams[item.field]
-    // 只有当值存在且不为空时才添加标签
-    if (value !== undefined && value !== null && value !== '' && !(Array.isArray(value) && value.length === 0)) {
-      // 特别处理数字范围类型，只有当两个值都不为空时才添加标签
-      if (item.type === 'numberrange') {
-        if (Array.isArray(value) && (value[0] !== null || value[1] !== null)) {
+  try {
+    const tags: Array<{key: string, label: string, value: any}> = []
+    // 处理快速搜索标签
+    if (quickSearchValue.value) {
+      tags.push({
+        key: props.quickSearchField,
+        label: '关键词',
+        value: quickSearchValue.value
+      })
+    }
+    
+    // 处理高级搜索标签
+    for (const item of props.searchConfig.formItems) {
+      const value = searchParams[item.field]
+      // 只有当值存在且不为空时才添加标签
+      if (value !== undefined && value !== null && value !== '' && !(Array.isArray(value) && value.length === 0)) {
+        // 特别处理数字范围类型，只有当两个值都不为空时才添加标签
+        if (item.type === 'numberrange') {
+          if (Array.isArray(value) && (value[0] !== null || value[1] !== null)) {
+            tags.push({
+              key: item.field,
+              label: item.label,
+              value
+            })
+          }
+        } 
+        // 特别处理日期范围类型，只有当两个值都不为空时才添加标签
+        else if (item.type === 'daterange') {
+          if (Array.isArray(value) && value.length === 2 && (value[0] !== null || value[1] !== null)) {
+            tags.push({
+              key: item.field,
+              label: item.label,
+              value
+            })
+          }
+        } else if (item.field !== props.quickSearchField) {
+          // 避免重复添加快速搜索字段
           tags.push({
             key: item.field,
             label: item.label,
             value
           })
         }
-      } 
-      // 特别处理日期范围类型，只有当两个值都不为空时才添加标签
-      else if (item.type === 'daterange') {
-        if (Array.isArray(value) && value.length === 2 && (value[0] !== null || value[1] !== null)) {
-          tags.push({
-            key: item.field,
-            label: item.label,
-            value
-          })
-        }
-      } else if (item.field !== props.quickSearchField) {
-        // 避免重复添加快速搜索字段
-        tags.push({
-          key: item.field,
-          label: item.label,
-          value
-        })
       }
+    }
+    
+    searchTags.value = tags
+  } catch (e) {
+    console.error('Error updating search tags:', e)
+    searchTags.value = []
+  }
+}
+
+// 获取TreeSelect选项显示值
+const getTreeSelectDisplayValue = (values: any[], options: SelectOption[], propsConfig: any): string => {
+  const valueKey = propsConfig.value || 'id'
+  const labelKey = propsConfig.label || 'label'
+  const labels = []
+  
+  for (const value of values) {
+    const option = findOptionByValue(options, value, valueKey)
+    if (option && option.hasOwnProperty(labelKey)) {
+      labels.push(option[labelKey as keyof SelectOption])
+    } else {
+      labels.push(String(value))
     }
   }
   
-  searchTags.value = tags
+  return labels.join(', ')
+}
+
+// 获取单个TreeSelect选项显示值
+const getSingleTreeSelectDisplayValue = (value: any, options: SelectOption[], propsConfig: any): string => {
+  const valueKey = propsConfig.value || 'id'
+  const labelKey = propsConfig.label || 'label'
+  const option = findOptionByValue(options, value, valueKey)
+  if (option && option.hasOwnProperty(labelKey)) {
+    return option[labelKey as keyof SelectOption]
+  }
+  return String(value)
+}
+
+// 递归查找树形选项
+const findOptionByValue = (options: SelectOption[], value: any, valueKey: string): SelectOption | null => {
+  for (const option of options) {
+    // 检查当前节点
+    if (option.hasOwnProperty(valueKey)) {
+      const optionValue = option[valueKey as keyof SelectOption]
+      if (String(optionValue) === String(value)) {
+        return option
+      }
+    }
+    
+    // 递归检查子节点
+    if (option.children && option.children.length > 0) {
+      const found = findOptionByValue(option.children, value, valueKey)
+      if (found) {
+        return found
+      }
+    }
+  }
+  return null
 }
 
 // 获取显示值（处理选择框等需要转换显示的值）
@@ -746,79 +875,155 @@ const getDisplayValue = (tag: {key: string, label: string, value: any}): string 
   
   // 如果表单项提供了自定义显示函数，则使用该函数
   if (formItem && formItem.displayValue) {
-    return formItem.displayValue(tag.value, advancedFormData.value)
+    try {
+      return formItem.displayValue(tag.value, advancedFormData.value) || String(tag.value)
+    } catch (e) {
+      console.error('Error in custom displayValue function:', e)
+      return String(tag.value)
+    }
   }
   
   // 如果是选择框或树形选择框，查找对应的标签
   if (formItem && (formItem.type === 'select' || formItem.type === 'treeselect') && (formItem.options || remoteSelectOptions.value[formItem.field])) {
     const selectItem = formItem as (SelectFormItem | TreeselectFormItem)
     const options = selectItem.remote ? remoteSelectOptions.value[formItem.field] : selectItem.options
-    const nodeKey = (formItem.type === 'treeselect') ? (formItem as TreeselectFormItem).nodeKey || 'value' : 'value'
-    if (Array.isArray(tag.value)) {
-      return tag.value.map(val => {
-        const option = findOptionByValue(options || [], val, nodeKey)
-        return option ? option.label : val
-      }).join(', ')
-    } else {
-      const option = findOptionByValue(options || [], tag.value, nodeKey)
-      return option ? option.label : tag.value
+    
+    try {
+      if (formItem.type === 'treeselect') {
+        // 特别处理 treeselect
+        const treeProps = getTreeSelectProps(formItem)
+        if (Array.isArray(tag.value)) {
+          return getTreeSelectDisplayValue(tag.value, options || [], treeProps)
+        } else {
+          return getSingleTreeSelectDisplayValue(tag.value, options || [], treeProps)
+        }
+      } else {
+        // 处理普通 select
+        if (Array.isArray(tag.value)) {
+          const labels = tag.value.map(val => {
+            const option = findOptionByValue(options || [], val, 'value')
+            return option ? option.label : String(val)
+          }).filter(label => label !== undefined && label !== 'undefined' && label !== 'null' && label !== '')
+          
+          const result = labels.join(', ')
+          return result || (tag.value.length ? tag.value.join(', ') : '')
+        } else {
+          const option = findOptionByValue(options || [], tag.value, 'value')
+          const result = option ? option.label : String(tag.value)
+          return result || String(tag.value)
+        }
+      }
+    } catch (e) {
+      console.error('Error processing select/treeselect display value:', e)
+      return Array.isArray(tag.value) ? tag.value.join(', ') : String(tag.value)
     }
   }
   
   // 如果是单选框或复选框
   if (formItem && (formItem.type === 'radio' || formItem.type === 'checkbox') && formItem.options) {
-    if (Array.isArray(tag.value)) {
-      // 复选框
-      return tag.value.map(val => {
-        const option = formItem.options?.find(opt => opt.value === val)
-        return option ? option.label : val
-      }).join(', ')
-    } else {
-      // 单选框
-      const option = formItem.options.find(opt => opt.value === tag.value)
-      return option ? option.label : tag.value
+    try {
+      if (Array.isArray(tag.value)) {
+        // 复选框
+        return tag.value.map(val => {
+          const option = formItem.options?.find(opt => opt.value === val)
+          return option ? option.label : val
+        }).join(', ')
+      } else {
+        // 单选框
+        const option = formItem.options.find(opt => opt.value === tag.value)
+        return option ? option.label : tag.value
+      }
+    } catch (e) {
+      console.error('Error processing radio/checkbox display value:', e)
+      return Array.isArray(tag.value) ? tag.value.join(', ') : String(tag.value)
     }
   }
   
   // 如果是日期范围
   if (formItem && formItem.type === 'daterange' && Array.isArray(tag.value)) {
-    // 检查数组长度和元素是否有效
-    if (tag.value.length === 2) {
-      const [start, end] = tag.value
-      if (start !== null && end !== null) {
-        return `${formatDate(start)} ~ ${formatDate(end)}`
-      } else if (start !== null) {
-        return `≥ ${formatDate(start)}`
-      } else if (end !== null) {
-        return `≤ ${formatDate(end)}`
+    try {
+      // 检查数组长度和元素是否有效
+      if (tag.value.length === 2) {
+        const [start, end] = tag.value
+        if (start !== null && end !== null) {
+          return `${formatDate(start)} ~ ${formatDate(end)}`
+        } else if (start !== null) {
+          return `≥ ${formatDate(start)}`
+        } else if (end !== null) {
+          return `≤ ${formatDate(end)}`
+        }
       }
+      return ''
+    } catch (e) {
+      console.error('Error processing daterange display value:', e)
+      return ''
     }
-    return ''
   }
   
   // 如果是日期
   if (formItem && formItem.type === 'date') {
-    if (tag.value) {
-      return formatDate(tag.value)
+    try {
+      if (tag.value) {
+        return formatDate(tag.value)
+      }
+      return ''
+    } catch (e) {
+      console.error('Error processing date display value:', e)
+      return ''
     }
-    return ''
   }
   
   // 如果是数字范围
   if (formItem && formItem.type === 'numberrange' && Array.isArray(tag.value)) {
-    const [min, max] = tag.value
-    if (min !== null && max !== null) {
-      return `${min} - ${max}`
-    } else if (min !== null) {
-      return `≥ ${min}`
-    } else if (max !== null) {
-      return `≤ ${max}`
+    try {
+      const [min, max] = tag.value
+      if (min !== null && max !== null) {
+        return `${min} - ${max}`
+      } else if (min !== null) {
+        return `≥ ${min}`
+      } else if (max !== null) {
+        return `≤ ${max}`
+      }
+      return ''
+    } catch (e) {
+      console.error('Error processing numberrange display value:', e)
+      return ''
     }
-    return ''
   }
+
+  // 如果是时间范围
+    if (formItem && formItem.type === 'timerange' && Array.isArray(tag.value)) {
+      try {
+        const [start, end] = tag.value
+        if (start && end) {
+          return `${start} ~ ${end}`
+        } else if (start) {
+          return `≥ ${start}`
+        } else if (end) {
+          return `≤ ${end}`
+        }
+        return ''
+      } catch (e) {
+        console.error('Error processing timerange display value:', e)
+        return ''
+      }
+    }
+    
+    // 如果是时间
+    if (formItem && formItem.type === 'time') {
+      try {
+        if (tag.value) {
+          return String(tag.value)
+        }
+        return ''
+      } catch (e) {
+        console.error('Error processing time display value:', e)
+        return ''
+      }
+    }
   
   // 默认直接返回值
-  return tag.value
+  return String(tag.value)
 }
 
 // 格式化日期显示
@@ -831,22 +1036,6 @@ const formatDate = (date: any): string => {
     return isNaN(d.getTime()) ? String(date) : d.toLocaleDateString()
   }
   return String(date)
-}
-
-// 递归查找树形选项
-const findOptionByValue = (options: SelectOption[], value: any, valueKey: string): SelectOption | null => {
-  for (const option of options) {
-    if (option[valueKey as keyof SelectOption] === value) {
-      return option
-    }
-    if (option.children && option.children.length > 0) {
-      const found = findOptionByValue(option.children, value, valueKey)
-      if (found) {
-        return found
-      }
-    }
-  }
-  return null
 }
 
 // 移除搜索标签
@@ -870,6 +1059,12 @@ const removeSearchTag = (key: string): void => {
       } else if (formItem.type === 'number') {
         // 数字输入框设置为null而不是空字符串
         advancedFormData.value[key] = null
+      } else if (formItem.type === 'timerange') {
+        // 时间范围设置为空数组
+        advancedFormData.value[key] = []
+      } else if (formItem.type === 'time') {
+        // 时间设置为null
+        advancedFormData.value[key] = null
       } else {
         advancedFormData.value[key] = ''
       }
@@ -890,38 +1085,84 @@ const clearAllTags = (): void => {
 
 // 异步加载选项
 const loadRemoteOptions = async (): Promise<void> => {
+  const loadPromises: Promise<void>[] = []
+  
   for (const item of props.searchConfig.formItems) {
     // 如果有loadOptions方法，则异步加载选项
     if ((item.type === 'select' || item.type === 'treeselect') && (item as SelectFormItem | TreeselectFormItem).loadOptions) {
       const selectItem = item as (SelectFormItem | TreeselectFormItem)
-      try {
-        const options = await selectItem.loadOptions!()
-        remoteSelectOptions.value[item.field] = options
-        
-        // 在远程选项加载完成后，更新搜索标签显示
-        if (searchTags.value.length > 0) {
-          // 使用防抖机制避免频繁更新导致的闪烁
-          if (updateTagsTimer) {
-            clearTimeout(updateTagsTimer)
-          }
-          updateTagsTimer = window.setTimeout(() => {
-            nextTick(() => {
-              forceUpdateSearchTags()
-            })
-          }, 100) as any
+      
+      const loadPromise = (async () => {
+        try {
+          const options = await selectItem.loadOptions!()
+          remoteSelectOptions.value[item.field] = options
+        } catch (error) {
+          console.error(`Failed to load options for ${item.field}:`, error)
         }
-      } catch (error) {
-        console.error(`Failed to load options for ${item.field}:`, error)
+      })()
+      
+      loadPromises.push(loadPromise)
+    }
+  }
+  
+  // 并行加载所有选项
+  if (loadPromises.length > 0) {
+    await Promise.all(loadPromises)
+    
+    // 在所有远程选项加载完成后，如果需要更新标签显示
+    if (searchTags.value.length > 0) {
+      // 使用防抖机制避免频繁更新导致的闪烁
+      if (updateTagsTimer) {
+        clearTimeout(updateTagsTimer)
       }
+      updateTagsTimer = window.setTimeout(() => {
+        nextTick(() => {
+          forceUpdateSearchTags()
+        })
+      }, 100) as any
     }
   }
 }
+
+// 获取Element Plus组件的属性
+const getElProps = (item: FormItem, elType: string, option?: SelectOption): Record<string, any> => {
+  // 通用属性透传
+  const elProps: Record<string, any> = {}
+  
+  // 如果item上定义了elProps属性，则透传给对应组件
+  if (item.hasOwnProperty('elProps')) {
+    const itemWithProps = item as any
+    if (itemWithProps.elProps) {
+      // 如果elProps是函数，执行它
+      if (typeof itemWithProps.elProps === 'function') {
+        Object.assign(elProps, itemWithProps.elProps(elType, option))
+      } 
+      // 如果elProps是对象且有对应elType的配置
+      else if (typeof itemWithProps.elProps === 'object' && itemWithProps.elProps[elType]) {
+        Object.assign(elProps, itemWithProps.elProps[elType])
+      }
+      // 如果elProps是对象但没有对应elType的配置，直接使用整个对象
+      else if (typeof itemWithProps.elProps === 'object' && 
+               !Array.isArray(itemWithProps.elProps) && 
+               Object.keys(itemWithProps.elProps).length > 0) {
+        Object.assign(elProps, itemWithProps.elProps)
+      }
+    }
+  }
+  
+  return elProps
+}
+
 
 // 监听外部传入的值变化
 watch(() => props.modelValue, (newVal) => {
   if (newVal) {
     // 更新快速搜索值
     quickSearchValue.value = newVal[props.quickSearchField] || ''
+    
+    // 创建新的表单数据对象
+    const newData: Record<string, any> = { ...advancedFormData.value }
+    let hasChanges = false
     
     // 更新表单数据
     Object.keys(newVal).forEach(key => {
@@ -930,12 +1171,13 @@ watch(() => props.modelValue, (newVal) => {
         const formItem = props.searchConfig.formItems.find(item => item.field === key)
         if (formItem && formItem.type === 'checkbox' && !Array.isArray(newVal[key])) {
           // 如果传入的checkbox数据不是数组格式，转换为数组
-          advancedFormData.value[key] = newVal[key] ? [newVal[key]] : []
+          newData[key] = newVal[key] ? [newVal[key]] : []
+          hasChanges = true
         } else if (formItem && formItem.type === 'daterange' && newVal[key]) {
           // 特别处理日期范围数据
           if (Array.isArray(newVal[key])) {
             // 确保日期范围中的每个元素都是Date对象
-            advancedFormData.value[key] = newVal[key].map((date: any) => {
+            newData[key] = newVal[key].map((date: any) => {
               if (date instanceof Date) return date
               if (typeof date === 'string' || typeof date === 'number') {
                 const d = new Date(date)
@@ -943,34 +1185,77 @@ watch(() => props.modelValue, (newVal) => {
               }
               return date
             })
+            hasChanges = true
           } else {
-            advancedFormData.value[key] = []
+            newData[key] = []
+            hasChanges = true
           }
         } else if (formItem && formItem.type === 'numberrange' && newVal[key]) {
           // 特别处理数字范围数据
           if (Array.isArray(newVal[key])) {
-            advancedFormData.value[key] = newVal[key]
+            newData[key] = newVal[key]
+            hasChanges = true
           } else {
-            advancedFormData.value[key] = [null, null]
+            newData[key] = [null, null]
+            hasChanges = true
           }
         } else if (formItem && formItem.type === 'number') {
           // 特别处理数字类型数据，确保传递给el-input-number的是Number或null
-          if (newVal[key] === '' || newVal[key] === undefined) {
-            advancedFormData.value[key] = null
-          } else {
-            advancedFormData.value[key] = newVal[key]
+          let newValue = newVal[key];
+          // 如果是字符串且可以转换为数字，则转换为数字
+          if (typeof newValue === 'string' && newValue !== '' && !isNaN(Number(newValue))) {
+            newValue = Number(newValue);
+          } else if (newValue === '' || newValue === undefined) {
+            // 空字符串或undefined重置为null
+            newValue = null;
           }
-        } else {
-          // 对于自定义字段和其他类型直接赋值
-          advancedFormData.value[key] = newVal[key]
+          
+          if (newData[key] !== newValue) {
+            newData[key] = newValue;
+            hasChanges = true;
+          }
+        } else if (formItem && formItem.type === 'timerange' && newVal[key]) {
+          // 特别处理时间范围数据
+          if (Array.isArray(newVal[key])) {
+            newData[key] = newVal[key]
+            hasChanges = true
+          } else {
+            newData[key] = []
+            hasChanges = true
+          }
+        } else if (formItem && formItem.type === 'time') {
+          // 特别处理时间数据
+          if (newData[key] !== newVal[key]) {
+            newData[key] = newVal[key]
+            hasChanges = true
+          }
+        } else if (formItem && formItem.type === 'custom') {
+          // 特别处理自定义类型的数据，确保数值类型不被转换为字符串
+          if (typeof formItem.default === 'number' && newVal[key] === '') {
+            // 如果默认值是数字且新值是空字符串，则使用默认值
+            newData[key] = formItem.default
+            hasChanges = true
+          } else if (newData[key] !== newVal[key]) {
+            newData[key] = newVal[key]
+            hasChanges = true
+          }
+        } else if (newData[key] !== newVal[key]) {
+          // 对于其他类型直接赋值
+          newData[key] = newVal[key]
+          hasChanges = true
         }
       }
     })
     
+    // 只有在有变化时才更新
+    if (hasChanges) {
+      advancedFormData.value = newData
+    }
+    
     // 更新搜索标签
     updateSearchTags(newVal)
   }
-}, { immediate: true })
+}, { immediate: true, deep: true })
 
 
 // 初始化表单数据
@@ -1008,6 +1293,12 @@ onMounted(() => {
     } else if (item.type === 'number') {
       // 数字输入框初始化为null而不是空字符串
       defaultData[item.field] = item.default ?? null
+    } else if (item && item.type === 'timerange') {
+      // 时间范围初始化为空数组
+      defaultData[item.field] = Array.isArray(item.default) ? item.default : []
+    } else if (item && item.type === 'time') {
+      // 时间初始化为null
+      defaultData[item.field] = item.default ?? null
     } else {
       // 其他类型使用默认值或空字符串
       defaultData[item.field] = item.default ?? ''
@@ -1018,7 +1309,6 @@ onMounted(() => {
   advancedFormData.value = defaultData
   textareaFocusStates.value = defaultTextareaFocusStates // 设置textarea焦点状态默认值
   
-  // 尝试从缓存中恢复搜索条件
   // 尝试从缓存中恢复搜索条件
   const cachedParams = getSearchCache()
   if (cachedParams) {
@@ -1063,26 +1353,34 @@ onMounted(() => {
           } else {
             defaultData[key] = [null, null]
           }
+        } else if (formItem && formItem.type === 'timerange' && cachedParams[key]) {
+          // 特别处理时间范围数据
+          if (Array.isArray(cachedParams[key])) {
+            defaultData[key] = cachedParams[key]
+          } else {
+            defaultData[key] = []
+          }
+        } else if (formItem && formItem.type === 'time' && cachedParams[key]) {
+          // 特别处理时间数据
+          defaultData[key] = cachedParams[key]
         } else {
           defaultData[key] = cachedParams[key]
         }
       }
     })
-  }
-  
-  // 设置表单数据
-  advancedFormData.value = defaultData
-  
-  // 更新搜索标签
-  const searchParams: Record<string, any> = {}
-  if (quickSearchValue.value) {
-    searchParams[props.quickSearchField] = quickSearchValue.value
-  }
-  Object.assign(searchParams, advancedFormData.value)
-  updateSearchTags(searchParams)
-  
-  // 如果有缓存数据，触发一次搜索
-  if (cachedParams) {
+    
+    // 设置表单数据
+    advancedFormData.value = defaultData
+    
+    // 更新搜索标签
+    const searchParams: Record<string, any> = {}
+    if (quickSearchValue.value) {
+      searchParams[props.quickSearchField] = quickSearchValue.value
+    }
+    Object.assign(searchParams, advancedFormData.value)
+    updateSearchTags(searchParams)
+    
+    // 如果有缓存数据，触发一次搜索
     emit('update:modelValue', searchParams)
     emit('search', searchParams)
   }
@@ -1121,20 +1419,13 @@ onMounted(() => {
       width: 100%;
     }
     
-    .el-form-item {
-      width: 100%;
-      margin-bottom: 18px;
-    }
-    
-    .el-form-item__content {
-      width: 100%;
-    }
-    
     .form-item-input,
     .form-item-select,
     .form-item-treeselect,
     .form-item-date,
     .form-item-daterange,
+    .form-item-time,
+    .form-item-timerange,
     .form-item-number,
     .form-item-radio,
     .form-item-checkbox {
@@ -1142,7 +1433,8 @@ onMounted(() => {
     }
     
     // 特别处理日期范围选择器的内部组件
-    .form-item-daterange {      
+    .form-item-daterange,
+    .form-item-timerange {      
       .el-date-editor.el-range-editor {
         width: 100%;
       }
@@ -1193,6 +1485,8 @@ onMounted(() => {
   .form-item-select,
   .form-item-date,
   .form-item-daterange,
+  .form-item-time,
+  .form-item-timerange,
   .form-item-number {
     height: 32px;
     width: 100%;

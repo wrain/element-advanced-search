@@ -42,6 +42,8 @@ Element Advanced Search 是一个功能强大的 Vue 3 搜索组件，基于 Ele
     - [Checkbox 类型 (type: 'checkbox')](#checkbox-类型-type-checkbox)
     - [Date 类型 (type: 'date')](#date-类型-type-date)
     - [Daterange 类型 (type: 'daterange')](#daterange-类型-type-daterange)
+    - [Time 类型 (type: 'time')](#time-类型-type-time)
+    - [Timerange 类型 (type: 'timerange')](#timerange-类型-type-timerange)
     - [Number 类型 (type: 'number')](#number-类型-type-number)
     - [Numberrange 类型 (type: 'numberrange')](#numberrange-类型-type-numberrange)
     - [Custom 类型 (type: 'custom')](#custom-类型-type-custom)
@@ -72,6 +74,7 @@ Element Advanced Search 是一个功能强大的 Vue 3 搜索组件，基于 Ele
 - 📱 **响应式布局**：支持多种屏幕尺寸的自适应显示
 - 🌐 **远程数据支持**：支持远程搜索和异步数据加载
 - 📝 **多种表单控件**：支持输入框、选择框、日期选择器、数字输入框等多种表单控件
+- ⚙️ **Element Plus 属性透传**：可通过 elProps 属性为不同组件类型传递特定属性
 
 ## 依赖说明
 
@@ -176,6 +179,7 @@ const handleSearch = (params) => {
 | default | any | 否 | 默认值 |
 | hidden | boolean | 否 | 是否隐藏该表单项 |
 | displayValue | Function | 否 | 自定义标签显示函数 |
+| elProps | Object/Function | 否 | 透传给 Element Plus 组件的属性，可为对象或函数 |
 
 根据不同类型，还有额外的特定属性：
 
@@ -267,6 +271,27 @@ const handleSearch = (params) => {
 | endPlaceholder | string | '结束日期' | 结束日期占位符 |
 | clearable | boolean | true | 是否可清空 |
 
+#### Time 类型 (type: 'time')
+
+时间选择器
+
+| 属性名 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| placeholder | string | `请选择${label}` | 占位符文本 |
+| clearable | boolean | true | 是否可清空 |
+| format | string | undefined | 时间格式 |
+
+#### Timerange 类型 (type: 'timerange')
+
+时间范围选择器
+
+| 属性名 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| startPlaceholder | string | '开始时间' | 开始时间占位符 |
+| endPlaceholder | string | '结束时间' | 结束时间占位符 |
+| clearable | boolean | true | 是否可清空 |
+| format | string | undefined | 时间格式 |
+
 #### Number 类型 (type: 'number')
 
 数字输入框
@@ -332,11 +357,11 @@ const handleSearch = (params) => {
 
 插槽作用域参数：
 - `model`: 表单数据对象
-- [field](src\types\index.d.ts#L10-L10): 当前字段名
+- [field](https://github.com/wrain/element-advanced-search/blob/main/src/types/index.d.ts#L9): 当前字段名
 
 ### 自定义标签显示
 
-对于 `type: 'custom'` 的表单项，可以通过 [displayValue](src\types\index.d.ts#L17-L17) 函数来自定义搜索标签的显示内容：
+对于 `type: 'custom'` 的表单项，可以通过 [displayValue](https://github.com/wrain/element-advanced-search/blob/main/src/types/index.d.ts#L16) 函数来自定义搜索标签的显示内容：
 
 ```js
 const searchConfig = {
@@ -510,9 +535,9 @@ const searchConfig: SearchConfig = {
 
 | 类型名称 | 说明 |
 | --- | --- |
-| [SearchConfig](src\types\index.d.ts#L115-L125) | 搜索配置对象类型，用于定义搜索表单的整体配置 |
-| [FormItem](src\types\index.d.ts#L103-L113) | 表单项配置类型，定义每个表单项的属性 |
-| [SelectOption](src\types\index.d.ts#L25-L29) | 选择项配置类型，用于 select、radio 等组件的选项 |
+| SearchConfig | 搜索配置对象类型，用于定义搜索表单的整体配置 |
+| FormItem | 表单项配置类型，定义每个表单项的属性 |
+| SelectOption | 选择项配置类型，用于 select、radio 等组件的选项 |
 
 ### 3. 在 Vue 项目中使用类型
 
@@ -585,11 +610,11 @@ declare module 'element-advanced-search' {
 
 ## 注意事项
 
-1. 使用缓存功能时，确保为每个页面设置唯一的 [cacheKey](src\components\ElementAdvancedSearch\index.vue#L12-L12)
-2. 对于自定义插槽，需要提供相应的 [slotName](src\types\index.d.ts#L104-L104) 并在模板中定义对应插槽
-3. 自定义插槽的搜索标签显示可以通过 [displayValue](src\types\index.d.ts#L17-L17) 函数进行自定义
+1. 使用缓存功能时，确保为每个页面设置唯一的 [cacheKey](https://github.com/wrain/element-advanced-search/blob/main/src/components/ElementAdvancedSearch/index.vue#L11)
+2. 对于自定义插槽，需要提供相应的 [slotName](https://github.com/wrain/element-advanced-search/blob/main/src/types/index.d.ts#L103) 并在模板中定义对应插槽
+3. 自定义插槽的搜索标签显示可以通过 [displayValue](https://github.com/wrain/element-advanced-search/blob/main/src/types/index.d.ts#L16) 函数进行自定义
 4. 所有表单项都应设置合适的默认值，以确保表单行为的一致性
-5. 远程搜索功能需要提供 [remoteMethod](src\types\index.d.ts#L41-L41) 和 [loadOptions](src\types\index.d.ts#L44-L44) 方法来处理数据加载
+5. 远程搜索功能需要提供 [remoteMethod](https://github.com/wrain/element-advanced-search/blob/main/src/types/index.d.ts#L40) 和 [loadOptions](https://github.com/wrain/element-advanced-search/blob/main/src/types/index.d.ts#L43) 方法来处理数据加载
 6. 组件会自动处理表单数据的响应式更新和搜索标签的显示
 7. 组件支持多种表单控件类型，包括输入框、选择框、日期选择器、数字输入框等
 8. 数字范围和日期范围类型的值以数组形式存储和传递

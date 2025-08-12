@@ -1,3 +1,5 @@
+
+
 # Element Advanced Search
 
 [![npm version](https://img.shields.io/npm/v/element-advanced-search.svg?style=flat-square)](https://www.npmjs.com/package/element-advanced-search)
@@ -41,6 +43,8 @@ For detailed changes in each version, please check the [Changelog](CHANGELOG.en.
     - [Checkbox Type (type: 'checkbox')](#checkbox-type-type-checkbox)
     - [Date Type (type: 'date')](#date-type-type-date)
     - [Daterange Type (type: 'daterange')](#daterange-type-type-daterange)
+    - [Time Type (type: 'time')](#time-type-type-time)
+    - [Timerange Type (type: 'timerange')](#timerange-type-type-timerange)
     - [Number Type (type: 'number')](#number-type-type-number)
     - [Numberrange Type (type: 'numberrange')](#numberrange-type-type-numberrange)
     - [Custom Type (type: 'custom')](#custom-type-type-custom)
@@ -71,6 +75,7 @@ For detailed changes in each version, please check the [Changelog](CHANGELOG.en.
 - 📱 **Responsive Layout**: Supports adaptive display for various screen sizes
 - 🌐 **Remote Data Support**: Supports remote search and asynchronous data loading
 - 📝 **Multiple Form Controls**: Supports input boxes, selectors, date pickers, number inputs, and various other form controls
+- ⚙️ **Element Plus Property Passthrough**: Support passing specific properties to different component types via elProps attribute
 
 ## Dependencies
 
@@ -175,6 +180,7 @@ All form items include the following basic properties:
 | default | any | No | Default value |
 | hidden | boolean | No | Whether to hide this form item |
 | displayValue | Function | No | Custom tag display function |
+| elProps | Object/Function | No | Properties passed to Element Plus components, can be an object or function |
 
 Depending on the type, there are additional specific properties:
 
@@ -266,6 +272,27 @@ Date range picker
 | endPlaceholder | string | 'End date' | End date placeholder |
 | clearable | boolean | true | Whether it can be cleared |
 
+#### Time Type (type: 'time')
+
+Time picker
+
+| Property Name | Type | Default Value | Description |
+| --- | --- | --- | --- |
+| placeholder | string | `Please select ${label}` | Placeholder text |
+| clearable | boolean | true | Whether it can be cleared |
+| format | string | undefined | Time format |
+
+#### Timerange Type (type: 'timerange')
+
+Time range picker
+
+| Property Name | Type | Default Value | Description |
+| --- | --- | --- | --- |
+| startPlaceholder | string | 'Start time' | Start time placeholder |
+| endPlaceholder | string | 'End time' | End time placeholder |
+| clearable | boolean | true | Whether it can be cleared |
+| format | string | undefined | Time format |
+
 #### Number Type (type: 'number')
 
 Number input box
@@ -331,11 +358,11 @@ For form items with `type: 'custom'`, you can customize form controls through th
 
 Slot scope parameters:
 - `model`: Form data object
-- [field](src\types\index.d.ts#L10-L10): Current field name
+- [field](https://github.com/wrain/element-advanced-search/blob/main/src/types/index.d.ts#L9): Current field name
 
 ### Custom Tag Display
 
-For form items with `type: 'custom'`, you can customize the display content of search tags through the [displayValue](src\types\index.d.ts#L17-L17) function:
+For form items with `type: 'custom'`, you can customize the display content of search tags through the [displayValue](https://github.com/wrain/element-advanced-search/blob/main/src/types/index.d.ts#L16) function:
 
 ```js
 const searchConfig = {
@@ -509,9 +536,9 @@ The main types exported by this component include:
 
 | Type Name | Description |
 | --- | --- |
-| [SearchConfig](src\types\index.d.ts#L115-L125) | Search configuration object type, used to define the overall configuration of the search form |
-| [FormItem](src\types\index.d.ts#L103-L113) | Form item configuration type, defines properties of each form item |
-| [SelectOption](src\types\index.d.ts#L25-L29) | Selection option configuration type, used for options in select, radio and other components |
+| SearchConfig | Search configuration object type, used to define the overall configuration of the search form |
+| FormItem | Form item configuration type, defines properties of each form item |
+| SelectOption | Selection option configuration type, used for options in select, radio and other components |
 
 ### 3. Using Types in Vue Projects
 
@@ -584,11 +611,11 @@ Through the above methods, you can make full use of TypeScript's type checking f
 
 ## Notes
 
-1. When using the cache function, ensure that each page has a unique [cacheKey](src\components\ElementAdvancedSearch\index.vue#L12-L12)
-2. For custom slots, you need to provide the corresponding [slotName](src\types\index.d.ts#L104-L104) and define the corresponding slot in the template
-3. The display of search tags for custom slots can be customized through the [displayValue](src\types\index.d.ts#L17-L17) function
+1. When using the cache function, ensure that each page has a unique [cacheKey](https://github.com/wrain/element-advanced-search/blob/main/src/components/ElementAdvancedSearch/index.vue#L11)
+2. For custom slots, you need to provide the corresponding [slotName](https://github.com/wrain/element-advanced-search/blob/main/src/types/index.d.ts#L103) and define the corresponding slot in the template
+3. The display of search tags for custom slots can be customized through the [displayValue](https://github.com/wrain/element-advanced-search/blob/main/src/types/index.d.ts#L16) function
 4. All form items should have appropriate default values to ensure consistent form behavior
-5. The remote search function requires providing [remoteMethod](src\types\index.d.ts#L41-L41) and [loadOptions](src\types\index.d.ts#L44-L44) methods to handle data loading
+5. The remote search function requires providing [remoteMethod](https://github.com/wrain/element-advanced-search/blob/main/src/types/index.d.ts#L40) and [loadOptions](https://github.com/wrain/element-advanced-search/blob/main/src/types/index.d.ts#L43) methods to handle data loading
 6. The component will automatically handle responsive updates of form data and display of search tags
 7. The component supports multiple form control types, including input boxes, selectors, date pickers, number inputs, and others
 8. Number range and date range type values are stored and passed as arrays
