@@ -1,8 +1,21 @@
+<!--
+ * @Author: wrainCN 123723620@qq.com
+ * @Date: 2025-08-11 16:21:06
+ * @LastEditors: wrainCN 123723620@qq.com
+ * @LastEditTime: 2025-08-13 16:27:14
+ * @FilePath: \element-advanced-search\CHANGELOG.en.md
+-->
 # Changelog
 
 All notable changes to the Element Advanced Search component will be documented in this file.
 
 This project follows [Semantic Versioning](https://semver.org/lang/en/) specification.
+
+## [1.0.7] - 2025-08-13
+
+### Fixed
+- Fixed TypeScript type error when importing module by default
+- Improved exports configuration in package.json for better module import compatibility
 
 ## [1.0.6] - 2025-08-13
 

@@ -2,7 +2,7 @@
  * @Author: wrainCN 123723620@qq.com
  * @Date: 2025-08-11 16:05:46
  * @LastEditors: wrainCN 123723620@qq.com
- * @LastEditTime: 2025-08-13 14:50:24
+ * @LastEditTime: 2025-08-13 16:25:51
  * @FilePath: \element-advanced-search\CHANGELOG.md
 -->
 # 更新日志
@@ -10,6 +10,12 @@
 所有针对 Element Advanced Search 组件的重要变更都会记录在此文件中。
 
 本项目遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/) 规范。
+
+## [1.0.7] - 2025-08-13
+
+### 修复
+- 修复默认导入模块时的 TypeScript 类型错误
+- 完善 package.json 中的 exports 配置，增强模块导入兼容性
 
 ## [1.0.6] - 2025-08-13
 

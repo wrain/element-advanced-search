@@ -1,8 +1,8 @@
 /*
  * @Author: WrainCN 123723620@qq.com
  * @Date: 2025-08-09 17:12:23
- * @LastEditors: WrainCN 123723620@qq.com
- * @LastEditTime: 2025-08-12 14:07:12
+ * @LastEditors: wrainCN 123723620@qq.com
+ * @LastEditTime: 2025-08-13 16:23:27
  * @Description: Advanced Search Component Types
  */
 // 确保所有接口都是 export 的
@@ -140,10 +140,13 @@ export type FormItem =
   | CustomFormItem
 
 export interface SearchConfig {
-  teleported: boolean
   formItems: FormItem[]
   labelWidth?: string
   inline?: boolean
   itemsPerRow?: number
   popoverWidth?: number
 }
+
+// 添加默认导出声明
+declare const ElementAdvancedSearch: import('vue').DefineComponent<{}, {}, any>
+export default ElementAdvancedSearch

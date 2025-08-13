@@ -1,6 +1,6 @@
 {
   "name": "element-advanced-search",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "功能强大的 Vue 3 搜索组件，基于 Element Plus 构建",
   "main": "dist/element-advanced-search.umd.js",
   "module": "dist/element-advanced-search.es.js",
@@ -12,7 +12,8 @@
     ".": {
       "import": "./dist/element-advanced-search.es.js",
       "require": "./dist/element-advanced-search.umd.js",
-      "types": "./src/types/index.d.ts"
+      "types": "./src/types/index.d.ts",
+      "default": "./dist/element-advanced-search.es.js"
     },
     "./dist/style.css": "./dist/style.css"
   },
