@@ -305,28 +305,57 @@
         </el-popover>
       </div>
     </div>
-    
 
     <!-- 搜索标签区域 -->
-    <div class="search-tags" v-if="searchTags.length > 0">
-            <el-tag
-        v-for="tag in searchTags"
-        :key="tag.key"
-        closable
-        @close="removeSearchTag(tag.key)"
-        class="search-tag"
-      >
-        {{ tag.label }}: {{ getDisplayValue(tag) }}
-      </el-tag>
-      <el-button 
-        type="primary"
-        link
-        @click="clearAllTags" 
-        class="clear-all-tags"
-      >
-        清除所有
-      </el-button>
-    </div>
+    <slot name="search-tags" :tags="searchTags" :remove-tag="removeSearchTag" :clear-all="clearAllTags">
+      <!-- 默认内容：如果用户没有提供插槽内容，则在此处显示标签 -->
+      <!-- 仅当未使用 teleport 时才显示默认标签区域 -->
+      <div class="search-tags" v-if="searchTags.length > 0 && !shouldRenderTeleport">
+        <el-tag
+          v-for="tag in searchTags"
+          :key="tag.key"
+          closable
+          @close="removeSearchTag(tag.key)"
+          class="search-tag"
+        >
+          {{ tag.label }}: {{ getDisplayValue(tag) }}
+        </el-tag>
+        <el-button 
+          type="primary"
+          link
+          @click="clearAllTags" 
+          class="clear-all-tags"
+        >
+          清除所有
+        </el-button>
+      </div>
+    </slot>
+    
+    <!-- 使用 Teleport 将标签传送到指定位置 -->
+    <Teleport v-if="shouldRenderTeleport" :to="props.teleportTo">
+      <slot name="teleported-search-tags" :tags="searchTags" :remove-tag="removeSearchTag" :clear-all="clearAllTags">
+        <!-- Teleport 默认内容 -->
+        <div class="search-tags teleported-tags" v-if="searchTags.length > 0">
+          <el-tag
+            v-for="tag in searchTags"
+            :key="tag.key"
+            closable
+            @close="removeSearchTag(tag.key)"
+            class="search-tag"
+          >
+            {{ tag.label }}: {{ getDisplayValue(tag) }}
+          </el-tag>
+          <el-button 
+            type="primary"
+            link
+            @click="clearAllTags" 
+            class="clear-all-tags"
+          >
+            清除所有
+          </el-button>
+        </div>
+      </slot>
+    </Teleport>
   </div>
 </template>
 
@@ -338,19 +367,22 @@ import { ElForm } from 'element-plus'
 // 添加timer变量用于防抖
 let updateTagsTimer: number | null = null
 
+// 添加 teleport 相关的 prop
 interface Props {
   searchConfig: SearchConfig
-  quickSearchField?: string // 快速搜索字段名
-  quickSearchPlaceholder?: string // 快速搜索占位符
-  modelValue?: Record<string, any> // v-model 绑定值
-  cacheKey?: string // 缓存键名，用于区分不同页面的搜索条件
+  quickSearchField?: string
+  quickSearchPlaceholder?: string
+  modelValue?: Record<string, any>
+  cacheKey?: string
+  teleportTo?: string // 添加 teleport 目标选择器
 }
 
 const props = withDefaults(defineProps<Props>(), {
   quickSearchField: 'keyword',
   quickSearchPlaceholder: '请输入搜索关键词',
   modelValue: () => ({}),
-  cacheKey: '' // 默认为空，不启用缓存功能
+  cacheKey: '',
+  teleportTo: undefined // 默认不使用 teleport
 })
 
 const emit = defineEmits<{
@@ -417,6 +449,36 @@ watch(() => remoteSelectOptions.value, () => {
     }
   }
 }, { deep: true })
+
+// 添加响应式状态来跟踪目标元素是否存在
+const isTeleportTargetExist = ref(false)
+
+// 添加 shouldRenderTeleport 计算属性
+const shouldRenderTeleport = computed(() => {
+  return props.teleportTo && isTeleportTargetExist.value
+})
+
+// 在组件挂载后检查目标元素是否存在
+onMounted(() => {
+  if (props.teleportTo) {
+    // 使用 nextTick 确保 DOM 已更新
+    nextTick(() => {
+      isTeleportTargetExist.value = !!document.querySelector(props.teleportTo!)
+    })
+  }
+})
+
+// 监听 teleportTo 属性变化
+watch(() => props.teleportTo, (newVal) => {
+  if (newVal) {
+    // 稍微延迟检查，确保目标元素已经渲染
+    setTimeout(() => {
+      isTeleportTargetExist.value = !!document.querySelector(newVal)
+    }, 0)
+  } else {
+    isTeleportTargetExist.value = false
+  }
+})
 
 // 计算属性
 const hasAdvancedFields = computed(() => {
@@ -1570,6 +1632,42 @@ onMounted(() => {
   }
 }
 
+// 为 Teleport 内容添加样式支持
+.search-tags {
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  
+  .search-tag {
+    background-color: var(--el-color-primary-light-9);
+    border-color: var(--el-color-primary-light-5);
+    color: var(--el-color-primary);
+    border-radius: 2px;
+    
+    :deep(.el-tag__close) {
+      color: var(--el-color-primary);
+      
+      &:hover {
+        background-color: var(--el-color-primary);
+        color: #fff;
+      }
+    }
+  }
+  
+  .clear-all-tags {
+    margin-left: 8px;
+    padding: 0;
+    height: auto;
+    
+    &:hover {
+      color: var(--el-color-primary);
+    }
+  }
+}
+
+
 // 暗色主题支持
 html.dark {
   .advanced-search-popover {
@@ -1608,7 +1706,6 @@ html.dark {
 .advanced-search {
   width: 100%;
   border-bottom: none;
-  padding: 16px;
   font-size: 14px;
   position: relative;
 

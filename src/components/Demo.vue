@@ -21,6 +21,9 @@
           <el-menu-item index="cache-demo" class="submenu-item">
             <span>带缓存功能</span>
           </el-menu-item>
+          <el-menu-item index="custom-tags-demo" class="submenu-item">
+            <span>自定义搜索结果显示位置</span>
+          </el-menu-item>
           <el-menu-item index="api">
             <el-icon><Document /></el-icon>
             <span>API 文档</span>
@@ -120,7 +123,7 @@
         </el-card>
       </div>
 
-      <div v-if="activeMenu === 'cache-demo' || activeMenu === 'demos'" class="content-section">
+            <div v-if="activeMenu === 'cache-demo' || activeMenu === 'demos'" class="content-section">
         <el-card class="demo-card">
           <template #header>
             <div class="card-header">
@@ -158,6 +161,55 @@
             </el-tab-pane>
             <el-tab-pane label="处理函数" name="handler">
               <pre class="source-code">{{ cacheSource.handler }}</pre>
+            </el-tab-pane>
+          </el-tabs>
+        </el-card>
+      </div>
+
+            <!-- 自定义标签显示位置示例 -->
+      <div v-if="activeMenu === 'custom-tags-demo' || activeMenu === 'demos'" class="content-section">
+        <el-card class="demo-card">
+          <template #header>
+            <div class="card-header">
+              <span>自定义搜索结果显示位置</span>
+            </div>
+          </template>
+
+          <el-alert
+            type="info"
+            :closable="false"
+            style="margin-bottom: 20px;"
+          >
+            通过设置 <code>teleport-to</code> 属性，可以将搜索结果显示在页面任意位置，这样你可以更加自由的布局页面。
+          </el-alert>
+
+          <!-- 外部容器用于显示搜索标签 - 这是真正的自定义位置 -->
+          <div id="custom-tags-container">
+            <div style="min-height: 40px;">
+              <!-- 标签将通过 Teleport 显示在此处 -->
+            </div>
+          </div>
+
+          <!-- 搜索组件，使用 teleportTo 属性 -->
+          <ElementAdvancedSearch
+            v-model="customTagsSearchParams"
+            :search-config="customTagsSearchConfig"
+            teleport-to="#custom-tags-container div"
+            @search="handleCustomTagsSearch"
+          />
+          
+          <el-tabs v-model="activeCustomTagsDemoTab" class="demo-tabs">
+            <el-tab-pane label="搜索结果" name="result">
+              <pre class="source-code">{{ formatSearchParams(customTagsSearchParams) }}</pre>
+            </el-tab-pane>
+            <el-tab-pane label="配置代码" name="config">
+              <pre class="source-code">{{ customTagsSource.config }}</pre>
+            </el-tab-pane>
+            <el-tab-pane label="模板代码" name="template">
+              <pre class="source-code">{{ customTagsSource.template }}</pre>
+            </el-tab-pane>
+            <el-tab-pane label="处理函数" name="handler">
+              <pre class="source-code">{{ customTagsSource.handler }}</pre>
             </el-tab-pane>
           </el-tabs>
         </el-card>
@@ -807,6 +859,133 @@ const handleCacheSearch = (params) => {
   console.log('缓存搜索:', params)
 }
 
+// 自定义标签显示位置
+const customTagsSearchParams = ref({})
+const customTagsDisplay = ref([]) // 用于在自定义位置显示的标签
+
+const customTagsSearchConfig = {
+  itemsPerRow: 2,
+  popoverWidth: 800,
+  labelWidth: '100px',
+  inline: true,
+  formItems: [
+    {
+      field: 'productName',
+      label: '产品名称',
+      type: 'input',
+      placeholder: '请输入产品名称',
+      elProps: {
+        prefixIcon: 'Search',
+        clearable: true
+      }
+    },
+    {
+      field: 'category',
+      label: '产品分类',
+      type: 'select',
+      placeholder: '请选择产品分类',
+      multiple: true,
+      options: [
+        { label: '电子产品', value: '1' },
+        { label: '家居用品', value: '2' },
+        { label: '服装鞋帽', value: '3' },
+        { label: '食品饮料', value: '4' }
+      ],
+      elProps: {
+        filterable: true,
+        clearable: true
+      }
+    },
+    {
+      field: 'priceRange',
+      label: '价格区间',
+      type: 'numberrange',
+      min: 0,
+      max: 99999,
+      minPlaceholder: '最低价',
+      maxPlaceholder: '最高价',
+      elProps: {
+        step: 10,
+        controlsPosition: 'right'
+      }
+    },
+    {
+      field: 'onSale',
+      label: '是否促销',
+      type: 'radio',
+      options: [
+        { label: '是', value: '1' },
+        { label: '否', value: '0' }
+      ]
+    }
+  ]
+}
+
+const handleCustomTagsSearch = (params) => {
+  customTagsSearchParams.value = params
+  console.log('自定义标签位置搜索:', params)
+  
+  // 更新自定义位置显示的标签
+  updateCustomTagsDisplay(params)
+}
+
+// 更新自定义位置的标签显示
+const updateCustomTagsDisplay = (searchParams) => {
+  try {
+    const tags = []
+    
+    // 处理各个搜索字段
+    for (const item of customTagsSearchConfig.formItems) {
+      const value = searchParams[item.field]
+      // 只有当值存在且不为空时才添加标签
+      if (value !== undefined && value !== null && value !== '' && !(Array.isArray(value) && value.length === 0)) {
+        // 特别处理数字范围类型
+        if (item.type === 'numberrange') {
+          if (Array.isArray(value) && (value[0] !== null || value[1] !== null)) {
+            tags.push({
+              key: item.field,
+              label: item.label,
+              value
+            })
+          }
+        } else {
+          tags.push({
+            key: item.field,
+            label: item.label,
+            value
+          })
+        }
+      }
+    }
+    
+    customTagsDisplay.value = tags
+  } catch (e) {
+    console.error('Error updating custom tags display:', e)
+    customTagsDisplay.value = []
+  }
+}
+
+// 处理自定义标签关闭
+const handleCustomTagClose = (key) => {
+  // 创建新的搜索参数，移除指定的键
+  const newParams = { ...customTagsSearchParams.value }
+  delete newParams[key]
+  
+  // 更新搜索参数和显示标签
+  customTagsSearchParams.value = newParams
+  updateCustomTagsDisplay(newParams)
+  
+  // 如果使用了缓存功能，还需要更新缓存
+  // 这里为了简化示例没有实现缓存逻辑
+}
+
+// 处理清除所有标签
+const handleCustomClearAll = () => {
+  customTagsSearchParams.value = {}
+  customTagsDisplay.value = []
+}
+
+
 // API 文档数据
 const propsData = ref([
   { name: 'searchConfig', type: 'SearchConfig', default: '-', required: true, description: '搜索配置对象' },
@@ -916,10 +1095,12 @@ const slotsExample = ref(`<ElementAdvancedSearch
 const activeFullDemoTab = ref('result')
 const activeBasicDemoTab = ref('result')
 const activeCacheDemoTab = ref('result')
+const activeCustomTagsDemoTab = ref('result') // 添加这一行
 
 const activeFullSourceTab = ref('config')
 const activeBasicSourceTab = ref('config')
 const activeCacheSourceTab = ref('config')
+const activeCustomTagsSourceTab = ref('config') // 添加这一行
 
 // 源码数据
 const fullSource = reactive({
@@ -1269,6 +1450,86 @@ const cacheSource = reactive({
 const handleCacheSearch = (params) => {
   cacheSearchParams.value = params
   console.log('缓存搜索:', params)
+}`
+})
+
+// 添加自定义标签示例的源码数据
+const customTagsSource = reactive({
+  config: `const customTagsSearchConfig = {
+  itemsPerRow: 2,
+  popoverWidth: 800,
+  labelWidth: '100px',
+  inline: true,
+  formItems: [
+    {
+      field: 'productName',
+      label: '产品名称',
+      type: 'input',
+      placeholder: '请输入产品名称',
+      elProps: {
+        prefixIcon: 'Search',
+        clearable: true
+      }
+    },
+    {
+      field: 'category',
+      label: '产品分类',
+      type: 'select',
+      placeholder: '请选择产品分类',
+      multiple: true,
+      options: [
+        { label: '电子产品', value: '1' },
+        { label: '家居用品', value: '2' },
+        { label: '服装鞋帽', value: '3' },
+        { label: '食品饮料', value: '4' }
+      ],
+      elProps: {
+        filterable: true,
+        clearable: true
+      }
+    },
+    {
+      field: 'priceRange',
+      label: '价格区间',
+      type: 'numberrange',
+      min: 0,
+      max: 99999,
+      minPlaceholder: '最低价',
+      maxPlaceholder: '最高价',
+      elProps: {
+        step: 10,
+        controlsPosition: 'right'
+      }
+    },
+    {
+      field: 'onSale',
+      label: '是否促销',
+      type: 'radio',
+      options: [
+        { label: '是', value: '1' },
+        { label: '否', value: '0' }
+      ]
+    }
+  ]
+}`,
+  template: `<!-- 外部容器用于显示搜索标签 - 这是真正的自定义位置 -->
+<div id="custom-tags-container">
+  <div style="min-height: 40px;">
+    <!-- 标签将通过 Teleport 显示在此处 -->
+  </div>
+</div>
+
+<!-- 搜索组件，使用 teleportTo 属性 -->
+<ElementAdvancedSearch
+  v-model="customTagsSearchParams"
+  :search-config="customTagsSearchConfig"
+  teleport-to="#custom-tags-container div"
+  @search="handleCustomTagsSearch"
+/>`,
+  handler: `const customTagsSearchParams = ref({})
+const handleCustomTagsSearch = (params) => {
+  customTagsSearchParams.value = params
+  console.log('自定义标签位置搜索:', params)
 }`
 })
 </script>

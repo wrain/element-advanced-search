@@ -11,7 +11,6 @@
 
 Element Advanced Search 是一个功能强大的 Vue 3 搜索组件，基于 Element Plus 构建，提供了丰富的搜索功能，包括快速搜索、高级筛选、搜索条件缓存、自定义插槽等。本组件及其文档均由通义灵码智能编码助手完成开发与编写，旨在为开发者提供高效、易用的搜索解决方案。[查看功能演示](https://wrain.github.io/element-advanced-search/)
 
-
 ## 组件截图展示
 
 ### 基础搜索界面
@@ -51,10 +50,12 @@ Element Advanced Search 是一个功能强大的 Vue 3 搜索组件，基于 Ele
 - [Slots](#slots)
   - [自定义表单项插槽](#自定义表单项插槽)
   - [自定义标签显示](#自定义标签显示)
+  - [自定义标签显示位置](#自定义标签显示位置)
 - [使用示例](#使用示例)
   - [基础用法](#基础用法)
   - [带缓存功能](#带缓存功能)
   - [远程搜索](#远程搜索)
+  - [自定义标签显示位置](#自定义标签显示位置-1)
 - [类型声明使用说明](#类型声明使用说明)
   - [1. 导入 SearchConfig 类型](#1-导入-searchconfig-类型)
   - [2. 主要类型说明](#2-主要类型说明)
@@ -75,6 +76,7 @@ Element Advanced Search 是一个功能强大的 Vue 3 搜索组件，基于 Ele
 - 🌐 **远程数据支持**：支持远程搜索和异步数据加载
 - 📝 **多种表单控件**：支持输入框、选择框、日期选择器、数字输入框等多种表单控件
 - ⚙️ **Element Plus 属性透传**：可通过 elProps 属性为不同组件类型传递特定属性
+- 📍 **自定义标签位置**：通过 Teleport 功能将搜索标签显示在页面任意位置
 
 ## 依赖说明
 
@@ -147,6 +149,7 @@ const handleSearch = (params) => {
 | quickSearchPlaceholder | string | '请输入搜索关键词' | 快速搜索占位符 |
 | modelValue | Record<string, any> | {} | v-model 绑定值 |
 | cacheKey | string | '' | 缓存键名，用于区分不同页面的搜索条件 |
+| teleportTo | string | undefined | 将搜索标签传送到指定CSS选择器位置 |
 
 ## Events
 
@@ -380,6 +383,53 @@ const searchConfig = {
 }
 ```
 
+### 自定义标签显示位置
+
+通过 `teleport-to` 属性，可以将搜索标签显示在页面的任何位置：
+
+```vue
+<template>
+  <!-- 自定义标签显示区域 -->
+  <div id="custom-tags-container">
+    <h3>搜索条件</h3>
+    <div id="teleport-target"></div>
+  </div>
+
+  <!-- 搜索组件 -->
+  <ElementAdvancedSearch
+    v-model="searchParams"
+    :search-config="searchConfig"
+    teleport-to="#teleport-target"
+    @search="handleSearch"
+  />
+</template>
+```
+
+当使用 `teleport-to` 属性时，搜索标签将不会显示在默认位置，而是通过 Vue 3 的 Teleport 功能显示在指定的 DOM 元素中。
+
+用户也可以通过 `teleported-search-tags` 插槽自定义传送区域的标签显示：
+
+```vue
+<template>
+  <ElementAdvancedSearch
+    v-model="searchParams"
+    :search-config="searchConfig"
+    teleport-to="#teleport-target"
+    @search="handleSearch"
+  >
+    <template #teleported-search-tags="{ tags, removeTag, clearAll }">
+      <div class="custom-teleport-tags">
+        <span v-for="tag in tags" :key="tag.key" class="tag">
+          {{ tag.label }}: {{ tag.value }}
+          <button @click="removeTag(tag.key)">×</button>
+        </span>
+        <button v-if="tags.length" @click="clearAll">清除所有</button>
+      </div>
+    </template>
+  </ElementAdvancedSearch>
+</template>
+```
+
 ## 使用示例
 
 ### 基础用法
@@ -508,6 +558,62 @@ const remoteSearchConfig = {
 }
 ```
 
+### 自定义标签显示位置
+
+```vue
+<template>
+  <!-- 自定义标签显示区域 -->
+  <div id="custom-tags-container">
+    <h3>搜索条件</h3>
+    <div id="teleport-target"></div>
+  </div>
+
+  <!-- 搜索组件 -->
+  <ElementAdvancedSearch
+    v-model="searchParams"
+    :search-config="searchConfig"
+    teleport-to="#teleport-target"
+    @search="handleSearch"
+  />
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import ElementAdvancedSearch from 'element-advanced-search'
+
+const searchParams = ref({})
+
+const searchConfig = {
+  itemsPerRow: 2,
+  popoverWidth: 800,
+  labelWidth: '100px',
+  inline: true,
+  formItems: [
+    {
+      field: 'name',
+      label: '姓名',
+      type: 'input',
+      placeholder: '请输入姓名'
+    },
+    {
+      field: 'status',
+      label: '状态',
+      type: 'select',
+      placeholder: '请选择状态',
+      options: [
+        { label: '启用', value: '0' },
+        { label: '禁用', value: '1' }
+      ]
+    }
+  ]
+}
+
+const handleSearch = (params) => {
+  console.log('搜索参数:', params)
+}
+</script>
+```
+
 ## 类型声明使用说明
 
 如果您使用的是TypeScript编写项目，本组件提供了完整的 TypeScript 类型支持，您可以通过以下方式使用类型声明：
@@ -618,6 +724,7 @@ declare module 'element-advanced-search' {
 6. 组件会自动处理表单数据的响应式更新和搜索标签的显示
 7. 组件支持多种表单控件类型，包括输入框、选择框、日期选择器、数字输入框等
 8. 数字范围和日期范围类型的值以数组形式存储和传递
+9. 使用 `teleport-to` 属性时，确保目标元素在DOM中存在，否则标签将不会显示
 
 ## 浏览器支持
 
@@ -626,4 +733,3 @@ declare module 'element-advanced-search' {
 ## 许可证
 
 MIT
-```

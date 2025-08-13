@@ -1,8 +1,8 @@
 <!--
- * @Author: WrainCN 123723620@qq.com
+ * @Author: wrainCN 123723620@qq.com
  * @Date: 2025-08-11 16:05:46
- * @LastEditors: WrainCN 123723620@qq.com
- * @LastEditTime: 2025-08-12 15:09:02
+ * @LastEditors: wrainCN 123723620@qq.com
+ * @LastEditTime: 2025-08-13 14:50:24
  * @FilePath: \element-advanced-search\CHANGELOG.md
 -->
 # 更新日志
@@ -11,9 +11,11 @@
 
 本项目遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/) 规范。
 
-## [Unreleased]
+## [1.0.6] - 2025-08-13
 
 ### 新增
+- 添加 Teleport 功能，支持将搜索标签显示在页面任意位置
+- 新增 teleportTo 属性，用于指定标签传送目标位置
 
 ### 更改
 
