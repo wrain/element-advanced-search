@@ -538,7 +538,10 @@ const fullSearchConfig = {
         filterable: true,
         clearable: true,
         collapseTags: true,
-        maxCollapseTags: 2
+        maxCollapseTags: 2,
+        onChange: (value) => {
+          alert('触发了select的change事件')
+        }
       }
     },
     {
@@ -920,7 +923,240 @@ const activeCacheSourceTab = ref('config')
 
 // 源码数据
 const fullSource = reactive({
-  config: `const fullSearchConfig = ${JSON.stringify(Object.assign({}, fullSearchConfig), null, 2)}`,
+  config: `const fullSearchConfig = {
+  itemsPerRow: 2,
+  popoverWidth: 800,
+  labelWidth: '100px',
+  inline: true,
+  formItems: [
+    {
+      field: 'name',
+      label: '姓名',
+      type: 'input',
+      placeholder: '请输入姓名',
+      // 示例：为input组件添加Element Plus原生属性
+      elProps: {
+        prefixIcon: 'User',
+        clearable: true,
+        maxlength: 20,
+        showWordLimit: true
+      }
+    },
+    {
+      field: 'age',
+      label: '年龄',
+      type: 'numberrange',
+      min: 0,
+      max: 150,
+      minPlaceholder: '最小年龄',
+      maxPlaceholder: '最大年龄',
+      // 示例：为input-number组件添加原生属性
+      elProps: {
+        step: 1,
+        controlsPosition: 'right'
+      }
+    },
+    {
+      field: 'status',
+      label: '状态',
+      type: 'select',
+      placeholder: '请选择状态',
+      multiple: true,
+      options: [
+        { label: '启用', value: '0' },
+        { label: '禁用', value: '1' },
+        { label: '待审核', value: '2' }
+      ],
+      // 示例：为select组件添加原生属性
+      elProps: {
+        filterable: true,
+        clearable: true,
+        collapseTags: true,
+        maxCollapseTags: 2,
+        onChange: (value) => {
+          alert('触发了select的change事件')
+        }
+      }
+    },
+    {
+      field: 'gender',
+      label: '性别',
+      type: 'radio',
+      options: [
+        { label: '男', value: '1' },
+        { label: '女', value: '2' }
+      ],
+      // 示例：为radio组件添加原生属性
+      elProps: (elType) => {
+        if (elType === 'radioGroup') {
+          return {
+            size: 'small'
+          }
+        } else if (elType === 'radio') {
+          return {
+            border: true
+          }
+        }
+        return {}
+      }
+    },
+    {
+      field: 'hobby',
+      label: '爱好',
+      type: 'checkbox',
+      options: [
+        { label: '读书', value: '1' },
+        { label: '游泳', value: '2' },
+        { label: '跑步', value: '3' }
+      ],
+      // 示例：为checkbox组件添加原生属性
+      elProps: (elType) => {
+        if (elType === 'checkboxGroup') {
+          return {
+            size: 'small'
+          }
+        } else if (elType === 'checkbox') {
+          return {
+            border: true
+          }
+        }
+        return {}
+      }
+    },
+    {
+      field: 'birthday',
+      label: '生日',
+      type: 'date',
+      placeholder: '请选择生日',
+      // 添加自定义显示函数
+      displayValue: (value) => {
+        if (value instanceof Date) {
+          return value.toLocaleDateString('zh-CN')
+        }
+        return value
+      },
+      // 示例：为date-picker组件添加原生属性
+      elProps: {
+        format: 'YYYY-MM-DD',
+        valueFormat: 'YYYY-MM-DD',
+        editable: false
+      }
+    },
+    {
+      field: 'registerTime',
+      label: '注册时间',
+      type: 'daterange',
+      startPlaceholder: '开始时间',
+      endPlaceholder: '结束时间',
+      // 示例：为date-picker组件添加原生属性
+      elProps: {
+        format: 'YYYY-MM-DD',
+        valueFormat: 'YYYY-MM-DD',
+        editable: false,
+        unlinkPanels: true
+      }
+    },
+    {
+      field: 'department',
+      label: '部门',
+      type: 'treeselect',
+      placeholder: '请选择部门',
+      multiple: true,
+      nodeKey: 'id',
+      props: {
+        value: 'id',
+        label: 'name',
+        children: 'children'
+      },
+      options: [
+        {
+          id: '1',
+          name: '技术部',
+          children: [
+            { id: '1-1', name: '前端组' },
+            { id: '1-2', name: '后端组' },
+            { id: '1-3', name: '测试组' }
+          ]
+        },
+        {
+          id: '2',
+          name: '销售部',
+          children: [
+            { id: '2-1', name: '国内销售' },
+            { id: '2-2', name: '海外销售' }
+          ]
+        },
+        {
+          id: '3',
+          name: '人事部'
+        }
+      ],
+      // 示例：为tree-select组件添加原生属性
+      elProps: {
+        filterable: true,
+        checkStrictly: true,
+        renderAfterExpand: false,
+        collapseTags: true,
+        maxCollapseTags: 2
+      }
+    },
+    {
+      field: 'description',
+      label: '描述',
+      type: 'textarea',
+      placeholder: '请输入描述',
+      shortPlaceholder: '简短描述',
+      longPlaceholder: '详细描述',
+      // 示例：为textarea组件添加原生属性
+      elProps: {
+        maxlength: 200,
+        showWordLimit: true,
+        resize: 'vertical'
+      }
+    },
+    {
+      field: 'salary',
+      label: '薪资',
+      type: 'number',
+      min: 0,
+      controlsPosition: 'right',
+      placeholder: '请输入薪资',
+      // 示例：为input-number组件添加原生属性
+      elProps: {
+        step: 1000,
+        precision: 2
+      }
+    },
+    {
+      field: 'workTime',
+      label: '工作时间',
+      type: 'time',
+      placeholder: '请选择工作时间',
+      // 示例：为time-picker组件添加原生属性
+      elProps: {
+        format: 'HH:mm',
+        'value-format': 'HH:mm',
+        clearable: true,
+        editable: false
+      }
+    },
+    {
+      field: 'workTimeRange',
+      label: '工作时间段',
+      type: 'timerange',
+      startPlaceholder: '开始时间',
+      endPlaceholder: '结束时间',
+      // 示例：为time-picker组件添加原生属性
+      elProps: {
+        format: 'HH:mm',
+        'value-format': 'HH:mm',
+        clearable: true,
+        editable: false,
+        unlinkPanels: true
+      }
+    }
+  ]
+}`,
   template: `<ElementAdvancedSearch
   v-model="fullSearchParams"
   :search-config="fullSearchConfig"
@@ -937,7 +1173,36 @@ const handleFullSearch = (params) => {
 })
 
 const basicSource = reactive({
-  config: `const basicSearchConfig = ${JSON.stringify(Object.assign({}, basicSearchConfig), null, 2)}`,
+  config: `const basicSearchConfig = {
+  formItems: [
+    {
+      field: 'name',
+      label: '姓名',
+      type: 'input',
+      placeholder: '请输入姓名',
+      // 示例：为input组件添加Element Plus原生属性
+      elProps: {
+        prefixIcon: 'User',
+        clearable: true
+      }
+    },
+    {
+      field: 'status',
+      label: '状态',
+      type: 'select',
+      placeholder: '请选择状态',
+      options: [
+        { label: '启用', value: '0' },
+        { label: '禁用', value: '1' }
+      ],
+      // 示例：为select组件添加原生属性
+      elProps: {
+        filterable: true,
+        clearable: true
+      }
+    }
+  ]
+}`,
   template: `<ElementAdvancedSearch
   v-model="basicSearchParams"
   :search-config="basicSearchConfig"
@@ -951,7 +1216,38 @@ const handleBasicSearch = (params) => {
 })
 
 const cacheSource = reactive({
-  config: `const cacheSearchConfig = ${JSON.stringify(Object.assign({}, cacheSearchConfig), null, 2)}`,
+  config: `const cacheSearchConfig = {
+  itemsPerRow: 2,
+  popoverWidth: 800,
+  labelWidth: '100px',
+  inline: true,
+  formItems: [
+    {
+      field: 'userName',
+      label: '用户名称',
+      type: 'input',
+      placeholder: '请输入用户名称',
+      // 示例：为input组件添加Element Plus原生属性
+      elProps: {
+        prefixIcon: 'User',
+        clearable: true
+      }
+    },
+    {
+      field: 'status',
+      label: '用户满意度',
+      type: 'custom',
+      slotName: 'status',
+      default: 0,
+      // 添加自定义显示函数
+      displayValue: (value) => {
+        const texts = ['极差', '失望', '一般', '满意', '惊喜']
+        const index = Math.floor(value) - 1
+        return value > 0 ? \`\${value}星(\${texts[index] || '未知'})\` : '未评分'
+      }
+    }
+  ]
+}`,
   template: `<ElementAdvancedSearch
   v-model="cacheSearchParams"
   :search-config="cacheSearchConfig"
